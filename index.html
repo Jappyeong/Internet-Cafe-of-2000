@@ -849,7 +849,7 @@
             </div>
 
             <!-- WINDOW: OPM PLAYER -->
-            <div id="win-opm" class="xp-window hidden pointer-events-auto" style="width: 480px; height: 430px; top: 45px; left: 130px;">
+            <div id="win-opm" class="xp-window hidden pointer-events-auto" style="width: 480px; height: 450px; top: 45px; left: 130px;">
                 <div class="xp-title-bar" onmousedown="dragMouseDown(event, 'win-opm')" ontouchstart="dragTouchStart(event, 'win-opm')">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-music"></i> 2000s OPM Hits Music Player</span>
                     <div class="flex">
@@ -857,51 +857,19 @@
                         <button class="xp-btn xp-btn-close" onclick="closeWindow('win-opm')">✕</button>
                     </div>
                 </div>
-                <div class="bg-stone-900 text-emerald-400 p-3 flex-1 flex flex-col justify-between overflow-y-auto font-mono text-xs">
-                    <div class="bg-black border-2 border-emerald-500/60 p-3 rounded space-y-2 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
-                        <div class="flex justify-between items-center text-[10px] text-emerald-600 border-b border-emerald-900 pb-1">
-                            <span>OPM MUSIC PLAYER</span>
-                            <span id="opm-status-indicator">READY</span>
-                        </div>
-                        <div>
-                            <div class="text-white font-bold text-sm truncate" id="opm-track-title">Paasa T.A.N.G.A. - Yeng Constantino</div>
-                                <div class="text-emerald-500 text-[11px]" id="opm-track-artist">From your Music folder</div>
-                        </div>
-                        <div class="w-full bg-emerald-950 h-2 rounded overflow-hidden">
-                            <div id="opm-progress" class="bg-emerald-400 h-full w-0 transition-all duration-300"></div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1">
-                        <label class="text-emerald-300 font-bold text-[11px]">Tracks in your Music folder:</label>
-                        <select id="opm-select" class="w-full bg-black text-emerald-300 border border-emerald-600 p-1.5 rounded focus:outline-none" onchange="changeOpmTrack(this.value)">
-                            <option value="0">Paasa T.A.N.G.A. - Yeng Constantino</option>
-                        </select>
-                    </div>
-
-                    <div class="flex items-center justify-between gap-2 text-[10px]">
-                        <span id="opm-library-status" class="text-emerald-600">Music folder: Downloads\Music</span>
-                        <label class="cursor-pointer text-emerald-300 underline">
-                            Choose music folder
-                            <input type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg" webkitdirectory directory multiple class="hidden" onchange="loadOpmFolder(event)">
-                        </label>
-                    </div>
-                    <audio id="opm-audio" preload="metadata"></audio>
-
-                    <div class="flex items-center gap-3 text-[11px]">
-                        <label for="opm-volume" class="text-emerald-300 font-bold">Volume</label>
-                        <input id="opm-volume" type="range" min="0" max="100" value="80" step="1" aria-label="OPM player volume" class="flex-1 accent-emerald-500 cursor-pointer" oninput="setOpmVolume(this.value)">
-                        <span id="opm-volume-label" class="w-9 text-right text-emerald-300">80%</span>
-                    </div>
-
-                    <div class="flex justify-center items-center gap-3 pt-2">
-                        <button onclick="toggleOpmPlay()" id="btn-opm-play" class="px-5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-black rounded border border-emerald-300 text-sm shadow">
-                            ▶ PLAY
-                        </button>
-                        <button onclick="stopOpmTrack()" class="px-4 py-1.5 bg-stone-700 hover:bg-stone-600 text-white font-bold rounded border border-stone-500 text-xs">
-                            ■ STOP
-                        </button>
-                    </div>
+                <div class="bg-stone-900 text-emerald-400 p-3 flex-1 overflow-y-auto font-mono text-xs">
+                    <div class="text-emerald-300 font-bold text-[11px] mb-2">OPM: Hits of the '00s</div>
+                    <iframe
+                        title="Spotify OPM Hits playlist"
+                        src="https://open.spotify.com/embed/playlist/37i9dQZF1DWT4GbvSrNWS6?utm_source=generator"
+                        width="100%"
+                        height="352"
+                        frameborder="0"
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        allowfullscreen
+                        loading="lazy"
+                        style="border-radius: 12px">
+                    </iframe>
                 </div>
             </div>
 
@@ -1601,117 +1569,6 @@
             }, 800);
         }
 
-        const opmTracks = [{
-            title: 'Paasa T.A.N.G.A. - Yeng Constantino',
-            artist: 'From your Music folder',
-            src: 'Music/Paasa%20T.A.N.G.A.%20-%20Yeng%20Constantino%20(Music%20Video).mp3'
-        }];
-        let opmObjectUrls = [];
-
-        function renderOpmTracks() {
-            const select = document.getElementById('opm-select');
-            select.replaceChildren();
-            opmTracks.forEach((track, index) => {
-                const option = document.createElement('option');
-                option.value = String(index);
-                option.textContent = track.title;
-                select.append(option);
-            });
-        }
-
-        function changeOpmTrack(val) {
-            const idx = Number.parseInt(val, 10);
-            const track = opmTracks[idx] || opmTracks[0];
-            const audio = document.getElementById('opm-audio');
-            if (!track || !audio) return;
-            stopOpmTrack();
-            document.getElementById('opm-track-title').textContent = track.title;
-            document.getElementById('opm-track-artist').textContent = track.artist;
-            audio.src = track.src;
-            audio.load();
-            document.getElementById('opm-select').value = String(idx);
-        }
-
-        function setOpmVolume(value) {
-            const volume = Number(value) / 100;
-            const audio = document.getElementById('opm-audio');
-            const label = document.getElementById('opm-volume-label');
-            if (audio) audio.volume = volume;
-            if (label) label.textContent = `${Math.round(volume * 100)}%`;
-        }
-
-        function loadOpmFolder(event) {
-            const files = Array.from(event.target.files || [])
-                .filter(file => file.type.startsWith('audio/') || /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(file.name))
-                .sort((a, b) => a.name.localeCompare(b.name));
-            if (!files.length) {
-                document.getElementById('opm-library-status').textContent = 'No audio files found in that folder.';
-                return;
-            }
-            opmObjectUrls.forEach(URL.revokeObjectURL);
-            opmObjectUrls = [];
-            opmTracks.splice(0, opmTracks.length, ...files.map(file => {
-                const src = URL.createObjectURL(file);
-                opmObjectUrls.push(src);
-                return {
-                    title: file.name.replace(/\.[^.]+$/, ''),
-                    artist: `Local file · ${file.webkitRelativePath || file.name}`,
-                    src
-                };
-            }));
-            document.getElementById('opm-library-status').textContent = `${files.length} track${files.length === 1 ? '' : 's'} loaded from the selected folder.`;
-            renderOpmTracks();
-            changeOpmTrack('0');
-        }
-
-        function toggleOpmPlay() {
-            const audio = document.getElementById('opm-audio');
-            const playBtn = document.getElementById('btn-opm-play');
-            const statusInd = document.getElementById('opm-status-indicator');
-            if (audio.paused) {
-                audio.play().then(() => {
-                    playBtn.textContent = '⏸ PAUSE';
-                    statusInd.textContent = 'PLAYING';
-                }).catch(() => {
-                    statusInd.textContent = 'TRACK UNAVAILABLE';
-                    document.getElementById('opm-library-status').textContent = 'Could not play track. Choose your Music folder.';
-                });
-            } else {
-                audio.pause();
-                playBtn.textContent = '▶ PLAY';
-                statusInd.textContent = 'PAUSED';
-            }
-        }
-
-        function stopOpmTrack() {
-            const audio = document.getElementById('opm-audio');
-            if (audio) {
-                audio.pause();
-                audio.currentTime = 0;
-            }
-            const pBar = document.getElementById('opm-progress');
-            if (pBar) pBar.style.width = '0%';
-            const playBtn = document.getElementById('btn-opm-play');
-            if (playBtn) playBtn.textContent = '▶ PLAY';
-            const statusInd = document.getElementById('opm-status-indicator');
-            if (statusInd) statusInd.textContent = 'READY';
-        }
-
-        function initializeOpmPlayer() {
-            const audio = document.getElementById('opm-audio');
-            setOpmVolume(document.getElementById('opm-volume').value);
-            audio.addEventListener('timeupdate', () => {
-                const progress = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
-                document.getElementById('opm-progress').style.width = `${progress}%`;
-            });
-            audio.addEventListener('ended', stopOpmTrack);
-            audio.addEventListener('error', () => {
-                document.getElementById('opm-status-indicator').textContent = 'TRACK NOT FOUND';
-            });
-            renderOpmTracks();
-            changeOpmTrack('0');
-        }
-
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
@@ -1729,7 +1586,6 @@
             updateClock();
             updateTaskbar();
             restoreFsState();
-            initializeOpmPlayer();
         };
     </script>
 </body>
