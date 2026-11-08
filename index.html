@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2000s Internet Cafe Digital Museum (Windows XP)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for classic icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for Retro Vibe -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=MS+Sans+Serif&family=Comic+Neue:wght@400;700&family=Tahoma:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom XP & Nostalgic Styles */
+        * {
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            background: #008080;
+        }
+
+        .font-pixel { font-family: 'VT323', monospace; }
+        .font-comic { font-family: 'Comic Neue', cursive; }
+
+        /* Windows XP Window Styles */
+        .xp-window {
+            background-color: #ece9d8;
+            border: 3px solid #0055ea;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            box-shadow: 4px 4px 14px rgba(0,0,0,0.45);
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 280px;
+            min-height: 200px;
+            max-width: 95vw;
+            max-height: 85vh;
+        }
+
+        .xp-title-bar {
+            background: linear-gradient(180deg, #0058ee 0%, #388cf5 9%, #0053ee 18%, #0052ec 92%, #003dd7 100%);
+            padding: 4px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            text-shadow: 1px 1px 1px #000;
+            cursor: move;
+            touch-action: none;
+        }
+
+        .xp-btn {
+            width: 21px;
+            height: 21px;
+            border-radius: 3px;
+            border: 1px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+
+        .xp-btn-close {
+            background: linear-gradient(180deg, #e7664e 0%, #d83d21 50%, #b81b04 100%);
+        }
+        .xp-btn-close:hover { background: #f8492d; }
+
+        .xp-btn-min, .xp-btn-max {
+            background: linear-gradient(180deg, #3c93ee 0%, #1562d6 50%, #0b49b9 100%);
+            margin-right: 2px;
+        }
+
+        /* Classic XP Taskbar */
+        .xp-taskbar {
+            background: linear-gradient(180deg, #1f6ee5 0%, #245edb 9%, #2156c7 18%, #1d4ec0 92%, #1941a5 100%);
+            height: 38px;
+            border-top: 1px solid #388cf5;
+        }
+
+        .xp-start-btn {
+            background: linear-gradient(180deg, #388e3c 0%, #2e7d32 100%);
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 2px 0 5px rgba(0,0,0,0.3);
+            font-style: italic;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.6);
+        }
+        .xp-start-btn:hover {
+            background: linear-gradient(180deg, #43a047 0%, #388e3c 100%);
+        }
+
+        .xp-tray {
+            background: linear-gradient(180deg, #0997e5 0%, #0077c5 100%);
+            border-left: 1px solid #0058ee;
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Classic XP Button */
+        .btn-xp {
+            background: linear-gradient(180deg, #fff 0%, #ece9d8 86%, #d8d0c5 100%);
+            border: 1px solid #003c74;
+            border-radius: 3px;
+            padding: 2px 12px;
+            font-size: 12px;
+            box-shadow: inset 0 0 1px #fff;
+            cursor: pointer;
+        }
+        .btn-xp:active {
+            background: linear-gradient(180deg, #d8d0c5 0%, #ece9d8 100%);
+            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.4);
+        }
+
+        /* Bliss Wallpaper */
+        .bliss-bg {
+            background: linear-gradient(to bottom, #2b70cd 0%, #4a91e5 40%, #76b5f4 55%, #6aa435 60%, #46811a 100%);
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Nudge Animation */
+        @keyframes nudge {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-10px, 8px) rotate(-2deg); }
+            40% { transform: translate(10px, -8px) rotate(2deg); }
+            60% { transform: translate(-8px, -5px) rotate(-1deg); }
+            80% { transform: translate(8px, 5px) rotate(1deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .animate-nudge {
+            animation: nudge 0.5s ease-in-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 14px;
+            height: 14px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #ece9d8;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c3c3c3;
+            border: 2px solid #ece9d8;
+            box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #808080;
+        }
+
+        /* Glitzy / Retro 2000s FX */
+        .glitter-text {
+            background: linear-gradient(90deg, #ff007f, #00f0ff, #ff007f);
+            background-size: 200% auto;
+            color: #fff;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 2s linear infinite;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        #fs-theme-wrapper.fs-classic {
+            background: #e8eef5 !important;
+            border-color: #315d89 !important;
+            color: #26384a !important;
+            font-family: Arial, Helvetica, sans-serif !important;
+        }
+        #fs-theme-wrapper.fs-classic #fs-header {
+            background: #fff !important;
+            border: 1px solid #9db4ca !important;
+            border-radius: 0 !important;
+        }
+        #fs-theme-wrapper.fs-classic #fs-header span[class*="text-3xl"] { color: #f2a900 !important; }
+        #fs-theme-wrapper.fs-classic #fs-header span[class*="text-2xl"] {
+            color: #315d89 !important;
+            font-family: Arial, Helvetica, sans-serif !important;
+            font-weight: 700 !important;
+        }
+        #fs-theme-wrapper.fs-classic #fs-header > div:nth-child(2) {
+            background: #315d89 !important;
+            border: 0 !important;
+        }
+        #fs-theme-wrapper.fs-classic #fs-header > div:nth-child(2) span { color: #fff !important; }
+        #fs-theme-wrapper.fs-classic #fs-header > div:nth-child(2) span:first-child,
+        #fs-theme-wrapper.fs-classic #fs-header > div:nth-child(2) span:hover { background: #24496e !important; }
+        #fs-theme-wrapper.fs-classic #fs-editor-panel,
+        #fs-theme-wrapper.fs-classic #fs-profile-box,
+        #fs-theme-wrapper.fs-classic .fs-panel {
+            background: #fff !important;
+            border: 1px solid #b5c7d8 !important;
+            border-radius: 0 !important;
+            color: #26384a !important;
+        }
+        #fs-theme-wrapper.fs-classic .grid > div > div {
+            background: #fff !important;
+            border-color: #b5c7d8 !important;
+            color: #26384a !important;
+        }
+        #fs-theme-wrapper.fs-classic [class*="text-pink"],
+        #fs-theme-wrapper.fs-classic [class*="text-[#ff"],
+        #fs-theme-wrapper.fs-classic [class*="text-[#d8"] { color: #315d89 !important; }
+        #fs-theme-wrapper.fs-classic [class*="border-pink"],
+        #fs-theme-wrapper.fs-classic [class*="border-[#ff"] { border-color: #b5c7d8 !important; }
+        #fs-theme-wrapper.fs-classic #fs-display-name,
+        #fs-theme-wrapper.fs-classic .fs-section-title { color: #24496e !important; font-weight: 700 !important; }
+        #fs-theme-wrapper.fs-classic .fs-post {
+            background: #f7f9fc;
+            border: 1px solid #c5d3e0;
+            color: #26384a;
+        }
+        #fs-theme-wrapper.fs-classic input,
+        #fs-theme-wrapper.fs-classic textarea,
+        #fs-theme-wrapper.fs-classic select { user-select: text; }
+    </style>
+</head>
+<body class="select-none relative overflow-hidden">
+
+    <!-- ==================== HANDYCAFE CLIENT OVERLAY ==================== -->
+    <div id="handycafe-overlay" class="fixed inset-0 z-50 bg-[#f9f8eb] flex flex-col justify-between p-6 select-none overflow-hidden" style="display: flex;">
+        
+        <!-- Top Header Banner -->
+        <div class="w-full">
+            <h1 class="text-3xl md:text-4xl font-black tracking-tighter text-[#4a4734] uppercase font-sans">
+                THE BEST SOLUTION
+            </h1>
+        </div>
+
+        <!-- Central HandyCafe Logo Background Artwork -->
+        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-0">
+            <div class="text-center">
+                <h1 class="text-6xl md:text-8xl font-black text-[#524c46] tracking-tight font-sans drop-shadow-sm leading-none">
+                    HandyCafe
+                </h1>
+                <p class="text-xl md:text-3xl font-bold text-[#524c46] tracking-wide font-sans mt-2">
+                    CyberCafe Management Software
+                </p>
+            </div>
+        </div>
+
+        <!-- HandyCafe Login Window -->
+        <div id="handycafe-login-dialog" class="absolute z-10 w-[330px] bg-[#e3e3e3] border border-[#7f9db9] rounded-sm shadow-[4px_4px_16px_rgba(0,0,0,0.5)] overflow-hidden font-sans text-xs text-stone-800" style="top: 35%; left: calc(50% - 165px);">
+            <!-- Window Titlebar (Movable Handle) -->
+            <div class="bg-gradient-to-r from-[#e3e7ed] via-[#d0d7e3] to-[#b4c1d4] border-b border-[#a0aab8] text-stone-800 px-2 py-1 flex justify-between items-center font-bold shadow-sm cursor-move select-none" onmousedown="dragHandyCafeStart(event)" ontouchstart="dragHandyCafeTouchStart(event)">
+                <div class="flex items-center gap-1.5">
+                    <!-- Key icon SVG -->
+                    <svg class="w-4 h-4 text-amber-600 drop-shadow-sm" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 14C5.9 14 5 13.1 5 12C5 10.9 5.9 10 7 10C8.1 10 9 10.9 9 12C9 13.1 8.1 14 7 14ZM12.6 10C11.8 7.6 9.6 6 7 6C3.7 6 1 8.7 1 12C1 15.3 3.7 18 7 18C9.6 18 11.8 16.4 12.6 14H16V18H20V14H23V10H12.6Z"/>
+                    </svg>
+                    <span class="text-xs font-semibold text-stone-900">Login</span>
+                </div>
+                <button onclick="dismissHandyCafeLogin()" class="w-4 h-4 bg-gradient-to-b from-[#f88d7f] to-[#e04532] hover:from-[#fca397] hover:to-[#eb5340] border border-stone-600 rounded-sm text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Header Banner Inside Dialog -->
+            <div class="bg-gradient-to-r from-[#efefef] via-[#cfcfcf] to-[#7f8896] text-white font-black text-right pr-4 py-2 text-2xl shadow-inner border-b border-stone-400 flex items-center justify-between px-3">
+                <div class="relative w-10 h-10 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-amber-500 drop-shadow-[1px_2px_2px_rgba(0,0,0,0.5)] transform -rotate-12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 14C5.9 14 5 13.1 5 12C5 10.9 5.9 10 7 10C8.1 10 9 10.9 9 12C9 13.1 8.1 14 7 14ZM12.6 10C11.8 7.6 9.6 6 7 6C3.7 6 1 8.7 1 12C1 15.3 3.7 18 7 18C9.6 18 11.8 16.4 12.6 14H16V18H20V14H23V10H12.6Z"/>
+                    </svg>
+                </div>
+                <span class="text-white drop-shadow-[1px_1px_2px_rgba(0,0,0,0.7)] tracking-wide">Login</span>
+            </div>
+
+            <!-- Form Content -->
+            <div class="p-5 space-y-3 bg-[#e5e5e5]">
+                <div class="flex items-center justify-center gap-3">
+                    <label class="w-16 text-right font-normal text-stone-700 text-[11px]">Username</label>
+                    <input type="text" id="cafe-username" value="ADMIN" class="w-44 bg-white border border-[#7f9db9] px-2 py-0.5 text-xs text-stone-900 focus:outline-none focus:border-blue-500 shadow-inner">
+                </div>
+
+                <div class="flex items-center justify-center gap-3">
+                    <label class="w-16 text-right font-normal text-stone-700 text-[11px]">Password</label>
+                    <input type="password" id="cafe-password" value="12345678" class="w-44 bg-white border border-[#7f9db9] px-2 py-0.5 text-xs text-stone-900 focus:outline-none focus:border-blue-500 shadow-inner" onkeypress="if(event.key==='Enter') dismissHandyCafeLogin()">
+                </div>
+
+                <div class="flex justify-center gap-3 pt-3">
+                    <button id="btn-login-cafe" onclick="dismissHandyCafeLogin()" class="px-4 py-1 bg-gradient-to-b from-white via-[#f0f0f0] to-[#d6d6d6] hover:from-white hover:to-[#e6e6e6] active:bg-[#c0c0c0] border border-[#7f9db9] rounded-md text-[11px] font-semibold text-stone-800 flex items-center gap-1.5 shadow-sm">
+                        <span class="text-emerald-600 text-sm font-black">✓</span> Login
+                    </button>
+                    <button onclick="dismissHandyCafeLogin()" class="px-4 py-1 bg-gradient-to-b from-white via-[#f0f0f0] to-[#d6d6d6] hover:from-white hover:to-[#e6e6e6] active:bg-[#c0c0c0] border border-[#7f9db9] rounded-md text-[11px] font-semibold text-stone-800 flex items-center gap-1.5 shadow-sm">
+                        <span class="text-red-600 text-xs font-black">✕</span> Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coffee Cup Image Graphic on Bottom Left -->
+        <div class="relative z-10 w-48 h-48 sm:w-60 sm:h-60 pointer-events-none mt-auto -ml-2 mb-[-10px]">
+            <svg viewBox="0 0 200 200" class="w-full h-full filter drop-shadow-md">
+                <ellipse cx="100" cy="165" rx="75" ry="18" fill="#1c1815" opacity="0.4" />
+                <ellipse cx="100" cy="160" rx="70" ry="15" fill="#2d2621" />
+                <ellipse cx="100" cy="158" rx="66" ry="12" fill="#52463e" />
+                
+                <path d="M45,100 C45,150 60,158 100,158 C140,158 155,150 155,100 Z" fill="url(#glassCupGrad)" opacity="0.9" />
+                <ellipse cx="100" cy="100" rx="55" ry="14" fill="#1f1813" />
+                <ellipse cx="100" cy="100" rx="51" ry="11" fill="#3a2214" />
+                <ellipse cx="98" cy="100" rx="46" ry="9" fill="#22130a" />
+
+                <path d="M46,102 C48,145 62,156 100,156 C138,156 152,145 154,102" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.4" />
+                <path d="M150,110 C175,110 175,140 145,142" fill="none" stroke="#52463e" stroke-width="9" stroke-linecap="round" />
+                <path d="M150,110 C175,110 175,140 145,142" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.5" stroke-linecap="round" />
+
+                <path d="M75,90 Q65,60 80,35 T70,10" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.35" class="animate-pulse" />
+                <path d="M100,85 Q115,55 95,30 T105,8" fill="none" stroke="#ffffff" stroke-width="4" opacity="0.4" class="animate-pulse" style="animation-delay: 0.5s;" />
+                <path d="M125,90 Q110,65 120,40 T115,15" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.3" class="animate-pulse" style="animation-delay: 1s;" />
+
+                <defs>
+                    <linearGradient id="glassCupGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#4a3e35" stop-opacity="0.9" />
+                        <stop offset="40%" stop-color="#2d241e" stop-opacity="0.8" />
+                        <stop offset="80%" stop-color="#120e0c" stop-opacity="0.95" />
+                        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.3" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+    </div>
+
+    <!-- ==================== WINDOWS XP DESKTOP ==================== -->
+    <div id="xp-desktop" class="w-full h-full bliss-bg relative flex flex-col justify-between overflow-hidden">
+        
+        <!-- Desktop Icons Vertical Layout (Left Column) -->
+        <div class="p-4 flex flex-col flex-wrap h-[calc(100vh-45px)] w-max gap-4 z-10 content-start">
+            <div onclick="openWindow('win-cafe-info')" class="flex flex-col items-center w-20 cursor-pointer group hover:bg-blue-600/30 p-1.5 rounded border border-transparent hover:border-blue-300/40">
+                <div class="w-12 h-12 bg-blue-600 rounded-lg shadow-md border-2 border-cyan-300 flex items-center justify-center text-white text-2xl group-hover:scale-105 transition">
+                    <i class="fa-solid fa-stopwatch"></i>
+                </div>
+                <span class="text-white text-xs text-center font-bold mt-1 shadow-black drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] leading-tight">HandyCafe Status</span>
+            </div>
+
+            <div onclick="openWindow('win-blogspot')" class="flex flex-col items-center w-20 cursor-pointer group hover:bg-blue-600/30 p-1.5 rounded border border-transparent hover:border-blue-300/40">
+                <div class="w-12 h-12 bg-orange-500 rounded-lg shadow-md border-2 border-white flex items-center justify-center text-white text-2xl group-hover:scale-105 transition">
+                    <i class="fa-bold fa-b"></i>
+                </div>
+                <span class="text-white text-xs text-center font-bold mt-1 shadow-black drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] leading-tight">Blogspot 2000s</span>
+            </div>
+
+            <div onclick="openWindow('win-msn')" class="flex flex-col items-center w-20 cursor-pointer group hover:bg-blue-600/30 p-1.5 rounded border border-transparent hover:border-blue-300/40">
+                <div class="w-12 h-12 bg-emerald-500 rounded-full shadow-md border-2 border-white flex items-center justify-center text-white text-2xl group-hover:scale-105 transition">
+                    <i class="fa-solid fa-people-arrows"></i>
+                </div>
+                <span class="text-white text-xs text-center font-bold mt-1 shadow-black drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] leading-tight">MSN Messenger</span>
+            </div>
+
+            <div onclick="openWindow('win-friendster')" class="flex flex-col items-center w-20 cursor-pointer group hover:bg-blue-600/30 p-1.5 rounded border border-transparent hover:border-blue-300/40">
+                <div class="w-12 h-12 bg-cyan-600 rounded-md shadow-md border-2 border-white flex items-center justify-center text-white text-2xl group-hover:scale-105 transition">
+                    <i class="fa-solid fa-user-group"></i>
+                </div>
+                <span class="text-white text-xs text-center font-bold mt-1 shadow-black drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] leading-tight">Friendster Profile</span>
+            </div>
+
+            <div onclick="openWindow('win-newspaper')" class="flex flex-col items-center w-20 cursor-pointer group hover:bg-blue-600/30 p-1.5 rounded border border-transparent hover:border-blue-300/40">
+                <div class="w-12 h-12 bg-stone-200 rounded shadow-md border-2 border-stone-600 flex items-center justify-center text-stone-800 text-2xl group-hover:scale-105 transition">
+                    <i class="fa-solid fa-newspaper"></i>
+                </div>
+                <span class="text-white text-xs text-center font-bold mt-1 shadow-black drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] leading-tight">Cyber Times 2000s</span>
+            </div>
+
+            <div onclick="openWindow('win-jejemon')" class="flex flex-col items-center w-20 cursor-pointer group hover:bg-blue-600/30 p-1.5 rounded border border-transparent hover:border-blue-300/40">
+                <div class="w-12 h-12 bg-pink-500 rounded-lg shadow-md border-2 border-yellow-300 flex items-center justify-center text-white text-2xl group-hover:scale-105 transition">
+                    <i class="fa-solid fa-language"></i>
+                </div>
+                <span class="text-white text-xs text-center font-bold mt-1 shadow-black drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] leading-tight">JeJeMoN TransLaTor</span>
+            </div>
+
+            <div onclick="openWindow('win-simsimi')" class="flex flex-col items-center w-20 cursor-pointer group hover:bg-blue-600/30 p-1.5 rounded border border-transparent hover:border-blue-300/40">
+                <div class="w-12 h-12 bg-yellow-400 rounded-full shadow-md border-2 border-amber-600 flex items-center justify-center text-amber-900 font-bold text-xl group-hover:scale-105 transition">
+                    🐥
+                </div>
+                <span class="text-white text-xs text-center font-bold mt-1 shadow-black drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] leading-tight">SimSimi Chat</span>
+            </div>
+
+            <div onclick="openWindow('win-opm')" class="flex flex-col items-center w-20 cursor-pointer group hover:bg-blue-600/30 p-1.5 rounded border border-transparent hover:border-blue-300/40">
+                <div class="w-12 h-12 bg-red-600 rounded-lg shadow-md border-2 border-white flex items-center justify-center text-white text-2xl group-hover:scale-105 transition">
+                    <i class="fa-solid fa-music"></i>
+                </div>
+                <span class="text-white text-xs text-center font-bold mt-1 shadow-black drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] leading-tight">2000s OPM Player</span>
+            </div>
+        </div>
+
+        <!-- Dynamic Windows Storage Container -->
+        <div id="windows-container" class="absolute inset-0 pointer-events-none z-20">
+
+            <!-- WINDOW: HANDYCAFE CLIENT INFO -->
+            <div id="win-cafe-info" class="xp-window hidden pointer-events-auto" style="width: 380px; top: 60px; left: 100px;">
+                <div class="xp-title-bar" onmousedown="dragMouseDown(event, 'win-cafe-info')" ontouchstart="dragTouchStart(event, 'win-cafe-info')">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-desktop"></i> HandyCafe Client Status</span>
+                    <div class="flex">
+                        <button class="xp-btn xp-btn-min" onclick="toggleMinWindow('win-cafe-info')">_</button>
+                        <button class="xp-btn xp-btn-close" onclick="closeWindow('win-cafe-info')">✕</button>
+                    </div>
+                </div>
+                <div class="p-4 bg-[#ece9d8] text-xs space-y-3">
+                    <div class="bg-white border border-gray-400 p-3 rounded shadow-inner space-y-2">
+                        <div class="flex justify-between font-bold border-b pb-1">
+                            <span>Client Computer:</span>
+                            <span class="text-blue-700">PC-07 (Internet Cafe Zone)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Active User:</span>
+                            <span id="cafe-info-user" class="font-semibold">ADMIN</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Time Session Left:</span>
+                            <span id="cafe-info-timer" class="font-mono text-red-600 font-bold">01:00:00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Current Rate:</span>
+                            <span>₱15.00 / Hour</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <button onclick="playWinSound('error')" class="btn-xp flex items-center gap-1">
+                            <i class="fa-solid fa-bell"></i> Call Attendant
+                        </button>
+                        <button onclick="lockSession()" class="btn-xp text-red-700 font-bold">
+                            Lock Station
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WINDOW: BLOGSPOT -->
+            <div id="win-blogspot" class="xp-window hidden pointer-events-auto" style="width: 620px; height: 460px; top: 40px; left: 120px;">
+                <div class="xp-title-bar" onmousedown="dragMouseDown(event, 'win-blogspot')" ontouchstart="dragTouchStart(event, 'win-blogspot')">
+                    <span class="flex items-center gap-1.5"><i class="fa-bold fa-b text-orange-300"></i> Blogspot.com - Cyber Memories (2000-2010 Review)</span>
+                    <div class="flex">
+                        <button class="xp-btn xp-btn-min" onclick="toggleMinWindow('win-blogspot')">_</button>
+                        <button class="xp-btn xp-btn-close" onclick="closeWindow('win-blogspot')">✕</button>
+                    </div>
+                </div>
+                <div class="bg-[#ece9d8] p-1.5 border-b flex items-center gap-2 text-xs">
+                    <span class="text-gray-600">Address:</span>
+                    <input type="text" value="http://cyber-memories-2000s.blogspot.com" class="w-full bg-white border border-gray-400 px-2 py-0.5" readonly>
+                    <button class="btn-xp">Go</button>
+                </div>
+                <div class="p-4 bg-orange-50 overflow-y-auto flex-1 font-sans text-stone-800">
+                    <div class="border-b-4 border-orange-500 pb-3 mb-4">
+                        <h1 class="text-2xl font-bold text-orange-600">Life in the 2000s CyberCafe Era 🌐</h1>
+                        <p class="text-xs text-gray-500">Posted by Admin_Nostalgia on Thursday, November 16, 2006</p>
+                    </div>
+                    
+                    <div class="space-y-6 text-sm">
+                        <article class="bg-white p-4 rounded-lg border border-orange-200 shadow-sm space-y-2">
+                            <h2 class="text-lg font-bold text-orange-800">1. Renting ₱15/Hour to Play GunBound, Ragnarok, & Counter-Strike</h2>
+                            <p class="leading-relaxed">
+                                Back in 2005, nothing beats sprinting to the nearest Internet Cafe right after the school bell rings. We’d hand over ₱15 coins to the computer attendant for 1 hour of PC time. We spent hours grinding on <i>Ragnarok Online</i>, aiming wind shots in <i>GunBound</i>, or shouting across the room during <i>Counter-Strike 1.6</i> LAN matches ("No Flash!").
+                            </p>
+                        </article>
+
+                        <article class="bg-white p-4 rounded-lg border border-orange-200 shadow-sm space-y-2">
+                            <h2 class="text-lg font-bold text-orange-800">2. Customizing HTML & Music on Profile Pages</h2>
+                            <p class="leading-relaxed">
+                                Everyone was a web developer in 2008 without realizing it! Learning CSS & HTML tags just to change background colors, add autoplay background music (MIDI or MP3), cursor glitter trails, and layout themes on social profiles.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WINDOW: MSN MESSENGER -->
+            <div id="win-msn" class="xp-window hidden pointer-events-auto" style="width: 500px; height: 440px; top: 60px; left: 160px;">
+                <div class="xp-title-bar" onmousedown="dragMouseDown(event, 'win-msn')" ontouchstart="dragTouchStart(event, 'win-msn')">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-people-arrows"></i> MSN Messenger - Live Chat</span>
+                    <div class="flex">
+                        <button class="xp-btn xp-btn-min" onclick="toggleMinWindow('win-msn')">_</button>
+                        <button class="xp-btn xp-btn-close" onclick="closeWindow('win-msn')">✕</button>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-b from-teal-50 to-emerald-100 flex-1 flex flex-col p-3 overflow-hidden">
+                    <div class="flex justify-between items-center bg-white p-2 rounded border border-teal-300 mb-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-teal-600 text-white flex items-center justify-center rounded font-bold">
+                                😊
+                            </div>
+                            <div>
+                                <div class="font-bold text-xs text-teal-900">Crush_Ng_Bayan_2007</div>
+                                <div class="text-[10px] text-gray-500">Status: <span class="text-emerald-600 font-semibold">Online (Listening to: Eraserheads)</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="msn-chat-box" class="flex-1 bg-white border border-teal-300 rounded p-3 overflow-y-auto space-y-2 text-xs">
+                        <div class="text-gray-400 text-center text-[10px]">--- Conversation started with Crush_Ng_Bayan_2007 ---</div>
+                        <div class="bg-teal-50 p-2 rounded max-w-[80%] border border-teal-200">
+                            <span class="font-bold text-teal-800">Crush_Ng_Bayan_2007:</span>
+                            <p>eoww! online kpa pala sa shop? buzz me if gising kpa :)</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 space-y-2">
+                        <div class="flex gap-2">
+                            <button onclick="sendNudge()" class="btn-xp text-xs font-bold text-purple-700 flex items-center gap-1">
+                                💥 NUDGE!
+                            </button>
+                            <button onclick="insertWink()" class="btn-xp text-xs">😉 Send Wink</button>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="msn-input" placeholder="Type a message..." class="flex-1 border border-teal-400 rounded px-2 py-1 text-xs focus:outline-none" onkeypress="if(event.key==='Enter') sendMsnMessage()">
+                            <button onclick="sendMsnMessage()" class="btn-xp text-xs font-bold bg-teal-600 text-teal-950">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WINDOW: FRIENDSTER -->
+            <div id="win-friendster" class="xp-window hidden pointer-events-auto" style="width: 700px; height: 560px; top: 30px; left: 90px;">
+                <div class="xp-title-bar" onmousedown="dragMouseDown(event, 'win-friendster')" ontouchstart="dragTouchStart(event, 'win-friendster')">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-group"></i> Friendster Profile - [ <span id="fs-title-display">xX_Echo_Jericho_Xx</span> ]</span>
+                    <div class="flex">
+                        <button class="xp-btn xp-btn-min" onclick="toggleMinWindow('win-friendster')">_</button>
+                        <button class="xp-btn xp-btn-close" onclick="closeWindow('win-friendster')">✕</button>
+                    </div>
+                </div>
+                
+                <!-- Custom Theme Styles Container -->
+                <div id="fs-theme-wrapper" class="fs-classic bg-[#e8eef5] text-[#26384a] flex-1 overflow-y-auto p-3 font-sans text-xs border-2 border-[#315d89] space-y-3">
+                    
+                    <!-- Friendster Smiley Logo Header -->
+                    <div id="fs-header" class="bg-[#1f0312] border-2 border-[#ff1493] p-3 rounded flex flex-col gap-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-3xl text-[#f2a900] font-bold">☺</span>
+                                <span class="text-2xl font-black tracking-tight text-[#315d89] font-serif lowercase">friendster<span class="text-xs align-top">®</span></span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="toggleFsEditor()" class="btn-xp text-[11px] font-bold bg-white text-stone-900 border-pink-300 hover:bg-pink-100">Edit Profile</button>
+                            </div>
+                        </div>
+
+                        <!-- Sub Navigation Bar -->
+                        <div class="flex flex-wrap gap-2 text-[10px] bg-[#315d89] p-1 border border-[#315d89] text-white font-bold">
+                            <span class="bg-[#24496e] px-2 py-0.5 rounded cursor-pointer">Home</span>
+                            <span class="hover:bg-[#24496e] px-2 py-0.5 rounded cursor-pointer">My Profile ▾</span>
+                            <span class="hover:bg-[#24496e] px-2 py-0.5 rounded cursor-pointer">My Connections ▾</span>
+                            <span class="hover:bg-[#24496e] px-2 py-0.5 rounded cursor-pointer">Find Friends</span>
+                            <span class="hover:bg-[#24496e] px-2 py-0.5 rounded cursor-pointer">Messages</span>
+                        </div>
+                    </div>
+
+                    <!-- Custom Editor Toolbar (Expandable) -->
+                    <div id="fs-editor-panel" class="hidden bg-[#2a0519] border-2 stroke-dashed border-[#ff69b4] p-3 rounded space-y-3 text-white text-xs">
+                        <h4 class="font-bold text-[#315d89] border-b border-[#b5c7d8] pb-1">Edit your Friendster profile</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="space-y-1.5">
+                                <label class="font-semibold text-pink-300 text-[11px]">Name:</label>
+                                <input type="text" id="fs-edit-name" value="xX_Echo_Jericho_Xx" class="w-full bg-black text-pink-200 border border-pink-500 px-2 py-0.5 text-xs rounded focus:outline-none">
+                                
+                                <label class="font-semibold text-pink-300 text-[11px]">Headline:</label>
+                                <input type="text" id="fs-edit-status" value="&quot;Pangako Sa 'Yo... 2000s Pop Heartthrob Vibe!&quot;" class="w-full bg-black text-pink-200 border border-pink-500 px-2 py-0.5 text-xs rounded focus:outline-none">
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="font-semibold text-pink-300 text-[10px]">Location:</label>
+                                        <input type="text" id="fs-edit-location" value="Quezon City, PH" class="w-full bg-black text-pink-200 border border-pink-500 px-1.5 py-0.5 text-xs rounded focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="font-semibold text-pink-300 text-[10px]">Hometown:</label>
+                                        <input type="text" id="fs-edit-hometown" value="Marikina City" class="w-full bg-black text-pink-200 border border-pink-500 px-1.5 py-0.5 text-xs rounded focus:outline-none">
+                                    </div>
+                                </div>
+
+                                <button onclick="saveFsProfileDetails()" class="btn-xp text-[11px] bg-emerald-300 text-stone-900 border-emerald-400 mt-1 font-bold hover:bg-emerald-200">Save Details</button>
+                                <span id="fs-save-status" class="text-[10px] text-slate-500 ml-2" aria-live="polite"></span>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="space-y-1">
+                                    <label class="font-semibold text-pink-300 text-[11px]">Profile picture URL or upload:</label>
+                                    <input type="text" id="fs-pic-url-input" placeholder="https://..." class="w-full bg-black text-pink-200 border border-pink-500 px-2 py-1 text-xs rounded focus:outline-none">
+                                    <div class="flex gap-2 pt-1">
+                                        <button onclick="updateFsProfilePicUrl()" class="btn-xp text-[11px] font-bold bg-white text-stone-900 border-pink-400 hover:bg-pink-100">Apply Image URL</button>
+                                        <label class="btn-xp text-[11px] font-bold bg-white text-stone-900 border-pink-400 cursor-pointer hover:bg-pink-100">
+                                            Upload File <input type="file" accept="image/*" class="hidden" onchange="uploadFsProfilePic(event)">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-1 pt-1">
+                                    <label class="font-semibold text-pink-300 text-[11px]">Profile theme:</label>
+                                    <select id="fs-theme-select" onchange="changeFsTheme(this.value)" class="w-full bg-black text-pink-200 border border-pink-500 px-2 py-1 text-xs rounded focus:outline-none">
+                                        <option value="classic-blue">Classic Friendster (2005)</option>
+                                        <option value="pink-emo">Hot Pink Emo Grid</option>
+                                        <option value="cyber-blue">Cyber Neon Blue 2005</option>
+                                        <option value="classic-gold">Classic Friendster Gold</option>
+                                        <option value="gothic-purple">Dark Gothic Purple</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Grid Layout -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="space-y-3">
+                            <div id="fs-profile-box" class="bg-white border border-[#b5c7d8] p-2 space-y-2 text-center">
+                                <div class="w-full aspect-square bg-black border border-pink-400 overflow-hidden relative group">
+                                    <img id="fs-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80" alt="Profile" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-[10px]">
+                                        Jericho Rosales Vibe
+                                    </div>
+                                </div>
+                                <div class="text-left space-y-1 text-[11px]">
+                                    <div class="font-bold text-[#24496e] text-sm" id="fs-display-name">xX_Echo_Jericho_Xx</div>
+                                    <div class="italic text-pink-300" id="fs-display-status">"Pangako Sa 'Yo... 2000s Pop Heartthrob Vibe!"</div>
+                                    <div class="pt-1 border-t border-pink-900/60 space-y-0.5 text-pink-200">
+                                        <div><span class="text-pink-400 font-semibold">Location:</span> <span id="fs-display-location">Quezon City, PH</span></div>
+                                        <div><span class="text-pink-400 font-semibold">Hometown:</span> <span id="fs-display-hometown">Marikina City</span></div>
+                                        <div><span class="text-pink-400 font-semibold">Status:</span> In a Relationship</div>
+                                        <div><span class="text-pink-400 font-semibold">Profile Views:</span> <span class="glitter-text font-bold">14,289</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-[#1a0210] border border-[#ff1493] p-2 space-y-1.5">
+                                <div class="font-bold text-[#ff1493] text-[11px] border-b border-pink-900 pb-1 flex justify-between">
+                                    <span>📸 Photo Albums (2)</span>
+                                    <span class="text-[9px] text-pink-400 cursor-pointer">View All</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-1.5">
+                                    <div class="bg-black border border-pink-500/50 p-1 text-center">
+                                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80" class="w-full h-16 object-cover mb-1">
+                                        <span class="text-[9px] text-pink-200 block truncate">Teleserye Shoot 06</span>
+                                    </div>
+                                    <div class="bg-black border border-pink-500/50 p-1 text-center">
+                                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" class="w-full h-16 object-cover mb-1">
+                                        <span class="text-[9px] text-pink-200 block truncate">Boracay 2005</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 space-y-3">
+                            <div class="fs-panel bg-white border border-[#b5c7d8] p-2 space-y-2">
+                                <div class="font-bold text-[#ff1493] text-[11px] border-b border-pink-900 pb-1 flex justify-between items-center">
+                                    <span>❤️ Echo's Top 8 Friends (2000s PH Celebs)</span>
+                                    <span class="text-[9px] text-pink-300">Edit Top 8</span>
+                                </div>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <div class="text-center group cursor-pointer">
+                                        <div class="w-full aspect-square bg-black border border-pink-400 overflow-hidden mb-1">
+                                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-110 transition">
+                                        </div>
+                                        <span class="text-[9px] text-pink-200 font-bold block truncate">Kristine H.</span>
+                                    </div>
+                                    <div class="text-center group cursor-pointer">
+                                        <div class="w-full aspect-square bg-black border border-pink-400 overflow-hidden mb-1">
+                                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-110 transition">
+                                        </div>
+                                        <span class="text-[9px] text-pink-200 font-bold block truncate">Heart E.</span>
+                                    </div>
+                                    <div class="text-center group cursor-pointer">
+                                        <div class="w-full aspect-square bg-black border border-pink-400 overflow-hidden mb-1">
+                                            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-110 transition">
+                                        </div>
+                                        <span class="text-[9px] text-pink-200 font-bold block truncate">Hero A.</span>
+                                    </div>
+                                    <div class="text-center group cursor-pointer">
+                                        <div class="w-full aspect-square bg-black border border-pink-400 overflow-hidden mb-1">
+                                            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-110 transition">
+                                        </div>
+                                        <span class="text-[9px] text-pink-200 font-bold block truncate">Sandara P.</span>
+                                    </div>
+                                    <div class="text-center group cursor-pointer">
+                                        <div class="w-full aspect-square bg-black border border-pink-400 overflow-hidden mb-1">
+                                            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-110 transition">
+                                        </div>
+                                        <span class="text-[9px] text-pink-200 font-bold block truncate">Diether O.</span>
+                                    </div>
+                                    <div class="text-center group cursor-pointer">
+                                        <div class="w-full aspect-square bg-black border border-pink-400 overflow-hidden mb-1">
+                                            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-110 transition">
+                                        </div>
+                                        <span class="text-[9px] text-pink-200 font-bold block truncate">Bea A.</span>
+                                    </div>
+                                    <div class="text-center group cursor-pointer">
+                                        <div class="w-full aspect-square bg-black border border-pink-400 overflow-hidden mb-1">
+                                            <img src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-110 transition">
+                                        </div>
+                                        <span class="text-[9px] text-pink-200 font-bold block truncate">John Lloyd</span>
+                                    </div>
+                                    <div class="text-center group cursor-pointer">
+                                        <div class="w-full aspect-square bg-black border border-pink-400 overflow-hidden mb-1">
+                                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-110 transition">
+                                        </div>
+                                        <span class="text-[9px] text-pink-200 font-bold block truncate">Anne C.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="fs-panel bg-white border border-[#b5c7d8] p-3 space-y-3">
+                                <div class="font-bold text-[#315d89] text-[11px] border-b border-[#b5c7d8] pb-1">Post to your profile</div>
+                                <textarea id="fs-post-input" maxlength="500" placeholder="What are you up to?" class="w-full bg-white text-stone-800 border border-[#9db4ca] p-2 text-xs focus:outline-none h-16 resize-y"></textarea>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] text-slate-500">Share a little update with your friends.</span>
+                                    <button onclick="addFsPost()" class="btn-xp text-[10px] font-bold bg-[#315d89] text-white border-[#24496e] hover:bg-[#24496e]">Post Update</button>
+                                </div>
+                                <div id="fs-post-list" class="space-y-2 text-xs"></div>
+                            </div>
+
+                            <div class="fs-panel bg-white border border-[#b5c7d8] p-3 space-y-3">
+                                <div class="font-bold text-[#ff1493] text-[11px] border-b border-pink-900 pb-1 flex justify-between items-center">
+                                    <span>💌 Testimonials (3)</span>
+                                    <span class="text-[9px] text-pink-300">Approve Testimonials</span>
+                                </div>
+
+                                <div class="bg-[#2b031b] p-2 border border-pink-500/40 rounded space-y-1.5">
+                                    <textarea id="fs-testi-input" placeholder="Write a testimonial for Echo... eow pOwz!" class="w-full bg-black text-pink-200 border border-pink-500/60 p-1.5 text-xs rounded focus:outline-none h-14 resize-none"></textarea>
+                                    <div class="flex justify-end">
+                                        <button onclick="addFsTestimonial()" class="btn-xp text-[10px] font-bold bg-pink-600 text-white border-pink-400 hover:bg-pink-500">Post Testimonial</button>
+                                    </div>
+                                </div>
+
+                                <div id="fs-testi-list" class="space-y-2 text-xs">
+                                    <div class="bg-[#260318] p-2 border border-pink-900/80 rounded space-y-1">
+                                        <div class="flex justify-between items-center text-[10px] text-pink-400 font-bold">
+                                            <span>Kristine_H (Top 1)</span>
+                                            <span>Oct 14, 2005</span>
+                                        </div>
+                                        <p class="text-pink-100 text-[11px]">"Super bait talaga nyan ni Echo! Best leading man forever! See you on set tomorrow!"</p>
+                                    </div>
+                                    <div class="bg-[#260318] p-2 border border-pink-900/80 rounded space-y-1">
+                                        <div class="flex justify-between items-center text-[10px] text-pink-400 font-bold">
+                                            <span>Hero_Angeles_Krung</span>
+                                            <span>Sep 29, 2005</span>
+                                        </div>
+                                        <p class="text-pink-100 text-[11px]">"mUsTa nApOwZ! Tnx sa pAg-aDd sa fRieNdsTeR! pAsaLaMaT nLnG sa LahaT~ ✌️"</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WINDOW: 2000s NEWSPAPER -->
+            <div id="win-newspaper" class="xp-window hidden pointer-events-auto" style="width: 580px; height: 460px; top: 50px; left: 140px;">
+                <div class="xp-title-bar" onmousedown="dragMouseDown(event, 'win-newspaper')" ontouchstart="dragTouchStart(event, 'win-newspaper')">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-newspaper"></i> Cyber Times Archive - 2000s Decade Review</span>
+                    <div class="flex">
+                        <button class="xp-btn xp-btn-min" onclick="toggleMinWindow('win-newspaper')">_</button>
+                        <button class="xp-btn xp-btn-close" onclick="closeWindow('win-newspaper')">✕</button>
+                    </div>
+                </div>
+                <div class="p-4 bg-[#fbf9f5] overflow-y-auto flex-1 font-serif text-stone-900 space-y-4">
+                    <div class="text-center border-b-2 border-stone-800 pb-2">
+                        <h1 class="text-3xl font-black uppercase tracking-tight font-serif">THE DAILY CYBER TIMES</h1>
+                        <div class="flex justify-between text-[11px] font-sans text-stone-600 mt-1 uppercase border-t border-stone-300 pt-1">
+                            <span>Vol. X - No. 2000</span>
+                            <span>Manila, Philippines</span>
+                            <span>2000 - 2010 Retrospective Edition</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed">
+                        <div class="space-y-2">
+                            <h2 class="font-bold text-sm text-stone-900 border-b border-stone-400 pb-0.5">DIAL-UP TO BROADBAND: THE CYBERCAFE BOOM</h2>
+                            <p>
+                                Manila witnessed the explosive rise of Internet Cafes between 2002 and 2008. From dial-up modems making screeching noises to high-speed DSL lines powering entire LAN gaming centers, cybercafes became the primary hub for youth socialization.
+                            </p>
+                        </div>
+                        <div class="space-y-2">
+                            <h2 class="font-bold text-sm text-stone-900 border-b border-stone-400 pb-0.5">MP3 PLAYERS & INFRARED MUSIC SHARING</h2>
+                            <p>
+                                Before streaming apps existed, music lovers transferred MP3 tracks via Infrared and Bluetooth between Nokia 3310s, 6600s, and Sony Ericsson Walkman phones, keeping playlists stored on 128MB memory cards.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WINDOW: JEJEMON TRANSLATOR -->
+            <div id="win-jejemon" class="xp-window hidden pointer-events-auto" style="width: 480px; height: 380px; top: 70px; left: 170px;">
+                <div class="xp-title-bar" onmousedown="dragMouseDown(event, 'win-jejemon')" ontouchstart="dragTouchStart(event, 'win-jejemon')">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-language"></i> JeJeMoN TransLaTor (2010 Classic)</span>
+                    <div class="flex">
+                        <button class="xp-btn xp-btn-min" onclick="toggleMinWindow('win-jejemon')">_</button>
+                        <button class="xp-btn xp-btn-close" onclick="closeWindow('win-jejemon')">✕</button>
+                    </div>
+                </div>
+                <div class="p-4 bg-pink-100 flex-1 flex flex-col space-y-3 font-sans text-xs">
+                    <div class="bg-pink-500 text-white p-2 rounded text-center font-bold font-comic">
+                        eOw pOwz! Translate your normal text to authentic 2010 JeJeMoN text! ~ xDxD
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label class="font-bold text-pink-900">Normal Text Input:</label>
+                        <input type="text" id="jeje-input" placeholder="Hello po, musta na kayo? Kain na tayo." class="w-full p-2 border-2 border-pink-400 rounded bg-white text-xs focus:outline-none" oninput="translateJejemon()">
+                    </div>
+
+                    <div class="space-y-1 flex-1">
+                        <label class="font-bold text-pink-900">Jejemon Output:</label>
+                        <div id="jeje-output" class="w-full h-24 p-2 bg-pink-50 border-2 border-pink-400 rounded font-comic font-bold text-pink-800 text-sm overflow-y-auto break-words">
+                            eOw pOwz! mUsTa nA kAyO? kAiN nA tAyO... ~!
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button onclick="copyJejeText()" class="btn-xp bg-pink-500 text-white border-pink-700 font-bold">Copy Jejemon Text</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WINDOW: SIMSIMI CHAT -->
+            <div id="win-simsimi" class="xp-window hidden pointer-events-auto" style="width: 420px; height: 420px; top: 80px; left: 190px;">
+                <div class="xp-title-bar" onmousedown="dragMouseDown(event, 'win-simsimi')" ontouchstart="dragTouchStart(event, 'win-simsimi')">
+                    <span class="flex items-center gap-1.5">🐥 SimSimi Bot (Witty 2000s AI)</span>
+                    <div class="flex">
+                        <button class="xp-btn xp-btn-min" onclick="toggleMinWindow('win-simsimi')">_</button>
+                        <button class="xp-btn xp-btn-close" onclick="closeWindow('win-simsimi')">✕</button>
+                    </div>
+                </div>
+                <div class="bg-yellow-100 flex-1 flex flex-col p-3 overflow-hidden text-xs">
+                    <div class="flex items-center gap-2 bg-yellow-300 p-2 rounded border border-yellow-400 mb-2">
+                        <div class="text-2xl">🐥</div>
+                        <div>
+                            <div class="font-bold text-amber-900">SimSimi Chick</div>
+                            <div class="text-[10px] text-amber-800">Ask me anything! (I might roast you gently)</div>
+                        </div>
+                    </div>
+
+                    <div id="simsimi-chat-box" class="flex-1 bg-white border border-yellow-400 rounded p-3 overflow-y-auto space-y-2">
+                        <div class="bg-yellow-100 text-amber-900 p-2 rounded max-w-[85%] border border-yellow-300">
+                            <strong>SimSimi:</strong> Hello! Ako si SimSimi. Anong balita sa cybercafe today? 🐥
+                        </div>
+                    </div>
+
+                    <div class="mt-2 flex gap-2">
+                        <input type="text" id="sim-input" placeholder="Say something to SimSimi..." class="flex-1 border border-yellow-500 rounded px-2 py-1 focus:outline-none" onkeypress="if(event.key==='Enter') sendSimSimiMessage()">
+                        <button onclick="sendSimSimiMessage()" class="btn-xp bg-yellow-400 text-amber-950 font-bold border-yellow-600">Talk</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WINDOW: OPM PLAYER -->
+            <div id="win-opm" class="xp-window hidden pointer-events-auto" style="width: 440px; height: 350px; top: 65px; left: 150px;">
+                <div class="xp-title-bar" onmousedown="dragMouseDown(event, 'win-opm')" ontouchstart="dragTouchStart(event, 'win-opm')">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-music"></i> 2000s OPM Hits Music Player</span>
+                    <div class="flex">
+                        <button class="xp-btn xp-btn-min" onclick="toggleMinWindow('win-opm')">_</button>
+                        <button class="xp-btn xp-btn-close" onclick="closeWindow('win-opm')">✕</button>
+                    </div>
+                </div>
+                <div class="bg-stone-900 text-emerald-400 p-3 flex-1 flex flex-col justify-between font-mono text-xs">
+                    <div class="bg-black border-2 border-emerald-500/60 p-3 rounded space-y-2 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                        <div class="flex justify-between items-center text-[10px] text-emerald-600 border-b border-emerald-900 pb-1">
+                            <span>OPM MUSIC PLAYER</span>
+                            <span id="opm-status-indicator">READY</span>
+                        </div>
+                        <div>
+                            <div class="text-white font-bold text-sm truncate" id="opm-track-title">Paasa T.A.N.G.A. - Yeng Constantino</div>
+                                <div class="text-emerald-500 text-[11px]" id="opm-track-artist">From your Music folder</div>
+                        </div>
+                        <div class="w-full bg-emerald-950 h-2 rounded overflow-hidden">
+                            <div id="opm-progress" class="bg-emerald-400 h-full w-0 transition-all duration-300"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-emerald-300 font-bold text-[11px]">Tracks in your Music folder:</label>
+                        <select id="opm-select" class="w-full bg-black text-emerald-300 border border-emerald-600 p-1.5 rounded focus:outline-none" onchange="changeOpmTrack(this.value)">
+                            <option value="0">Paasa T.A.N.G.A. - Yeng Constantino</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-2 text-[10px]">
+                        <span id="opm-library-status" class="text-emerald-600">Music folder: Downloads\Music</span>
+                        <label class="cursor-pointer text-emerald-300 underline">
+                            Choose music folder
+                            <input type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg" webkitdirectory directory multiple class="hidden" onchange="loadOpmFolder(event)">
+                        </label>
+                    </div>
+                    <audio id="opm-audio" preload="metadata"></audio>
+
+                    <div class="flex justify-center items-center gap-3 pt-2">
+                        <button onclick="toggleOpmPlay()" id="btn-opm-play" class="px-5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-black rounded border border-emerald-300 text-sm shadow">
+                            ▶ PLAY
+                        </button>
+                        <button onclick="stopOpmTrack()" class="px-4 py-1.5 bg-stone-700 hover:bg-stone-600 text-white font-bold rounded border border-stone-500 text-xs">
+                            ■ STOP
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- System Tray Volume Popup Dialog -->
+        <div id="volume-popup" class="hidden absolute bottom-11 right-4 w-44 bg-[#ece9d8] border-2 border-[#0055ea] rounded-t shadow-lg z-40 p-3 space-y-2 text-xs select-none">
+            <div class="font-bold text-blue-900 border-b border-stone-300 pb-1 flex justify-between items-center">
+                <span>Master Volume</span>
+                <button onclick="toggleVolumePopup()" class="text-stone-500 hover:text-black font-bold text-xs">✕</button>
+            </div>
+            <div class="flex items-center gap-3 py-2">
+                <i id="vol-popup-icon" class="fa-solid fa-volume-high text-blue-700 text-base"></i>
+                <input type="range" id="vol-range" min="0" max="100" value="80" class="w-full accent-blue-600 cursor-pointer" oninput="setMasterVolume(this.value)">
+            </div>
+            <div class="flex justify-between items-center text-[11px] pt-1 border-t border-stone-300">
+                <span id="vol-percentage-label" class="font-semibold text-stone-700">80%</span>
+                <label class="flex items-center gap-1 cursor-pointer">
+                    <input type="checkbox" id="vol-mute-check" onchange="toggleMuteVolume(this.checked)"> Mute
+                </label>
+            </div>
+        </div>
+
+        <!-- ==================== WINDOWS XP TASKBAR ==================== -->
+        <div class="xp-taskbar relative z-30 flex items-center justify-between px-1 select-none">
+            <div class="flex items-center gap-1 h-full">
+                <button onclick="toggleStartMenu()" class="xp-start-btn h-full px-3 text-white font-bold flex items-center gap-2 border-r border-green-700 cursor-pointer">
+                    <span class="text-xl">❖</span>
+                    <span class="text-sm tracking-wide font-sans">start</span>
+                </button>
+
+                <div id="taskbar-items" class="flex items-center gap-1 overflow-x-auto max-w-[50vw]">
+                </div>
+            </div>
+
+            <div class="xp-tray h-full px-3 flex items-center gap-3 text-white text-xs">
+                <div onclick="toggleVolumePopup()" class="cursor-pointer hover:bg-white/20 p-1 rounded flex items-center gap-1" title="Master Volume">
+                    <i id="tray-vol-icon" class="fa-solid fa-volume-high text-xs"></i>
+                </div>
+                <div class="flex items-center gap-1" title="HandyCafe Connected">
+                    <i class="fa-solid fa-network-wired text-emerald-300 text-xs"></i>
+                </div>
+                <div id="xp-clock" class="font-mono text-xs font-semibold drop-shadow">
+                    12:00 PM
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Menu Popup -->
+        <div id="start-menu" class="hidden absolute bottom-10 left-0 w-64 bg-white border-2 border-blue-600 rounded-t-lg shadow-2xl z-40 overflow-hidden font-sans text-xs">
+            <div class="bg-gradient-to-r from-blue-700 to-blue-500 text-white p-3 font-bold flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-amber-400 border border-white flex items-center justify-center text-stone-900 font-bold">
+                    ☕
+                </div>
+                <div>
+                    <div class="text-sm">User_PC07</div>
+                    <div class="text-[10px] text-blue-200">HandyCafe Member</div>
+                </div>
+            </div>
+            <div class="p-2 space-y-1 bg-blue-50/40">
+                <div onclick="openWindow('win-blogspot'); toggleStartMenu();" class="p-2 hover:bg-blue-600 hover:text-white rounded flex items-center gap-2 cursor-pointer">
+                    <i class="fa-bold fa-b text-orange-500"></i> Blogspot 2000s Review
+                </div>
+                <div onclick="openWindow('win-msn'); toggleStartMenu();" class="p-2 hover:bg-blue-600 hover:text-white rounded flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-people-arrows text-emerald-500"></i> MSN Messenger
+                </div>
+                <div onclick="openWindow('win-friendster'); toggleStartMenu();" class="p-2 hover:bg-blue-600 hover:text-white rounded flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-user-group text-cyan-500"></i> Friendster Profile
+                </div>
+                <div onclick="openWindow('win-jejemon'); toggleStartMenu();" class="p-2 hover:bg-blue-600 hover:text-white rounded flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-language text-pink-500"></i> JeJeMoN TransLaTor
+                </div>
+                <div onclick="openWindow('win-simsimi'); toggleStartMenu();" class="p-2 hover:bg-blue-600 hover:text-white rounded flex items-center gap-2 cursor-pointer">
+                    <span>🐥</span> SimSimi Chatbot
+                </div>
+                <div onclick="openWindow('win-opm'); toggleStartMenu();" class="p-2 hover:bg-blue-600 hover:text-white rounded flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-music text-red-500"></i> 2000s OPM Player
+                </div>
+                <hr class="border-gray-300">
+                <div onclick="lockSession(); toggleStartMenu();" class="p-2 hover:bg-red-600 hover:text-white rounded flex items-center gap-2 cursor-pointer font-bold text-red-700">
+                    <i class="fa-solid fa-lock"></i> Lock HandyCafe Station
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ==================== JAVASCRIPT SYSTEM & ENGINE ==================== -->
+    <script>
+        let isCafeUnlocked = false;
+        let masterVolume = 0.8;
+        let isMuted = false;
+        let sessionSeconds = 3600;
+        let sessionTimerInterval = null;
+        let activeZIndex = 30;
+
+        let hcDragWin = null;
+        let hcOffsetX = 0;
+        let hcOffsetY = 0;
+
+        function dragHandyCafeStart(e) {
+            hcDragWin = document.getElementById('handycafe-login-dialog');
+            if (!hcDragWin) return;
+            hcOffsetX = e.clientX - hcDragWin.offsetLeft;
+            hcOffsetY = e.clientY - hcDragWin.offsetTop;
+            document.onmousemove = dragHandyCafeMove;
+            document.onmouseup = dragHandyCafeEnd;
+        }
+
+        function dragHandyCafeMove(e) {
+            if (!hcDragWin) return;
+            e.preventDefault();
+            hcDragWin.style.left = (e.clientX - hcOffsetX) + "px";
+            hcDragWin.style.top = (e.clientY - hcOffsetY) + "px";
+        }
+
+        function dragHandyCafeEnd() {
+            document.onmousemove = null;
+            document.onmouseup = null;
+            hcDragWin = null;
+        }
+
+        function dragHandyCafeTouchStart(e) {
+            if (e.touches.length !== 1) return;
+            hcDragWin = document.getElementById('handycafe-login-dialog');
+            if (!hcDragWin) return;
+            const touch = e.touches[0];
+            hcOffsetX = touch.clientX - hcDragWin.offsetLeft;
+            hcOffsetY = touch.clientY - hcDragWin.offsetTop;
+            document.ontouchmove = dragHandyCafeTouchMove;
+            document.ontouchend = dragHandyCafeTouchEnd;
+        }
+
+        function dragHandyCafeTouchMove(e) {
+            if (!hcDragWin || e.touches.length !== 1) return;
+            const touch = e.touches[0];
+            hcDragWin.style.left = (touch.clientX - hcOffsetX) + "px";
+            hcDragWin.style.top = (touch.clientY - hcOffsetY) + "px";
+        }
+
+        function dragHandyCafeTouchEnd() {
+            document.ontouchmove = null;
+            document.ontouchend = null;
+            hcDragWin = null;
+        }
+
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playWinSound(type) {
+            if (isMuted) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                const now = ctx.currentTime;
+                const vol = masterVolume;
+
+                if (type === 'login') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.3);
+                    gain.gain.setValueAtTime(0.2 * vol, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'error' || type === 'nudge') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.setValueAtTime(100, now + 0.1);
+                    gain.gain.setValueAtTime(0.3 * vol, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, now);
+                    gain.gain.setValueAtTime(0.05 * vol, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                }
+            } catch (e) {
+                console.log("Audio not allowed yet:", e);
+            }
+        }
+
+        function dismissHandyCafeLogin() {
+            const overlay = document.getElementById('handycafe-overlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+            isCafeUnlocked = true;
+            playWinSound('login');
+            startSessionTimer();
+
+            const unameInput = document.getElementById('cafe-username');
+            const uname = (unameInput && unameInput.value.trim()) ? unameInput.value.trim() : 'ADMIN';
+            const userLabel = document.getElementById('cafe-info-user');
+            if (userLabel) userLabel.textContent = uname;
+        }
+
+        function lockSession() {
+            const overlay = document.getElementById('handycafe-overlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+            }
+            isCafeUnlocked = false;
+            playWinSound('error');
+            if (sessionTimerInterval) {
+                clearInterval(sessionTimerInterval);
+            }
+        }
+
+        function startSessionTimer() {
+            if (sessionTimerInterval) clearInterval(sessionTimerInterval);
+            sessionTimerInterval = setInterval(() => {
+                if (sessionSeconds > 0) {
+                    sessionSeconds--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(sessionTimerInterval);
+                    lockSession();
+                }
+            }, 1000);
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const hrs = String(Math.floor(sessionSeconds / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((sessionSeconds % 3600) / 60)).padStart(2, '0');
+            const secs = String(sessionSeconds % 60).padStart(2, '0');
+            const timerEl = document.getElementById('cafe-info-timer');
+            if (timerEl) {
+                timerEl.textContent = `${hrs}:${mins}:${secs}`;
+            }
+        }
+
+        function toggleVolumePopup() {
+            const pop = document.getElementById('volume-popup');
+            if (pop) {
+                pop.classList.toggle('hidden');
+            }
+        }
+
+        function setMasterVolume(val) {
+            masterVolume = val / 100;
+            const lbl = document.getElementById('vol-percentage-label');
+            if (lbl) lbl.textContent = `${val}%`;
+            updateVolumeIcon(masterVolume);
+        }
+
+        function toggleMuteVolume(muted) {
+            isMuted = muted;
+            updateVolumeIcon(isMuted ? 0 : masterVolume);
+        }
+
+        function updateVolumeIcon(vol) {
+            const trayIcon = document.getElementById('tray-vol-icon');
+            const popIcon = document.getElementById('vol-popup-icon');
+            let iconClass = 'fa-solid fa-volume-high';
+
+            if (isMuted || vol === 0) {
+                iconClass = 'fa-solid fa-volume-xmark text-red-500';
+            } else if (vol < 0.4) {
+                iconClass = 'fa-solid fa-volume-low';
+            }
+
+            if (trayIcon) trayIcon.className = `${iconClass} text-xs`;
+            if (popIcon) popIcon.className = `${iconClass} text-base text-blue-700`;
+        }
+
+        let draggedWin = null;
+        let winOffsetX = 0;
+        let winOffsetY = 0;
+
+        function dragMouseDown(e, winId) {
+            draggedWin = document.getElementById(winId);
+            if (!draggedWin) return;
+            bringToFront(winId);
+            winOffsetX = e.clientX - draggedWin.offsetLeft;
+            winOffsetY = e.clientY - draggedWin.offsetTop;
+            document.onmousemove = elementDrag;
+            document.onmouseup = closeDragElement;
+        }
+
+        function elementDrag(e) {
+            if (!draggedWin) return;
+            e.preventDefault();
+            draggedWin.style.left = (e.clientX - winOffsetX) + "px";
+            draggedWin.style.top = (e.clientY - winOffsetY) + "px";
+        }
+
+        function closeDragElement() {
+            document.onmousemove = null;
+            document.onmouseup = null;
+            draggedWin = null;
+        }
+
+        function dragTouchStart(e, winId) {
+            if (e.touches.length !== 1) return;
+            draggedWin = document.getElementById(winId);
+            if (!draggedWin) return;
+            bringToFront(winId);
+            const touch = e.touches[0];
+            winOffsetX = touch.clientX - draggedWin.offsetLeft;
+            winOffsetY = touch.clientY - draggedWin.offsetTop;
+            document.ontouchmove = elementTouchMove;
+            document.ontouchend = elementTouchEnd;
+        }
+
+        function elementTouchMove(e) {
+            if (!draggedWin || e.touches.length !== 1) return;
+            const touch = e.touches[0];
+            draggedWin.style.left = (touch.clientX - winOffsetX) + "px";
+            draggedWin.style.top = (touch.clientY - winOffsetY) + "px";
+        }
+
+        function elementTouchEnd() {
+            document.ontouchmove = null;
+            document.ontouchend = null;
+            draggedWin = null;
+        }
+
+        function openWindow(winId) {
+            playWinSound('click');
+            const win = document.getElementById(winId);
+            if (win) {
+                win.classList.remove('hidden');
+                bringToFront(winId);
+                updateTaskbar();
+            }
+        }
+
+        function closeWindow(winId) {
+            playWinSound('click');
+            const win = document.getElementById(winId);
+            if (win) {
+                win.classList.add('hidden');
+                updateTaskbar();
+            }
+        }
+
+        function toggleMinWindow(winId) {
+            const win = document.getElementById(winId);
+            if (win) {
+                win.classList.add('hidden');
+                updateTaskbar();
+            }
+        }
+
+        function bringToFront(winId) {
+            activeZIndex++;
+            const win = document.getElementById(winId);
+            if (win) {
+                win.style.zIndex = activeZIndex;
+            }
+        }
+
+        function updateTaskbar() {
+            const container = document.getElementById('taskbar-items');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const windows = [
+                { id: 'win-cafe-info', title: 'HandyCafe Status', icon: 'fa-stopwatch' },
+                { id: 'win-blogspot', title: 'Blogspot 2000s', icon: 'fa-bold' },
+                { id: 'win-msn', title: 'MSN Messenger', icon: 'fa-people-arrows' },
+                { id: 'win-friendster', title: 'Friendster Profile', icon: 'fa-user-group' },
+                { id: 'win-newspaper', title: 'Cyber Times', icon: 'fa-newspaper' },
+                { id: 'win-jejemon', title: 'Jejemon', icon: 'fa-language' },
+                { id: 'win-simsimi', title: 'SimSimi', icon: 'fa-comments' },
+                { id: 'win-opm', title: 'OPM Player', icon: 'fa-music' }
+            ];
+
+            windows.forEach(w => {
+                const el = document.getElementById(w.id);
+                if (el && !el.classList.contains('hidden')) {
+                    const btn = document.createElement('button');
+                    btn.className = 'px-3 py-1 bg-blue-800/80 hover:bg-blue-700 text-white rounded text-xs flex items-center gap-1.5 border border-blue-400/50 shadow-inner truncate max-w-[140px]';
+                    btn.innerHTML = `<i class="fa-solid ${w.icon} text-[10px]"></i> <span class="truncate">${w.title}</span>`;
+                    btn.onclick = () => {
+                        bringToFront(w.id);
+                    };
+                    container.appendChild(btn);
+                }
+            });
+        }
+
+        function toggleStartMenu() {
+            playWinSound('click');
+            const menu = document.getElementById('start-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+            }
+        }
+
+        function sendNudge() {
+            playWinSound('nudge');
+            const msnWin = document.getElementById('win-msn');
+            if (msnWin) {
+                msnWin.classList.add('animate-nudge');
+                setTimeout(() => msnWin.classList.remove('animate-nudge'), 500);
+            }
+            const chatBox = document.getElementById('msn-chat-box');
+            if (chatBox) {
+                chatBox.innerHTML += `<div class="text-purple-600 font-bold text-center text-[11px] my-1">💥 You just sent a Nudge!</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        function insertWink() {
+            const chatBox = document.getElementById('msn-chat-box');
+            if (chatBox) {
+                chatBox.innerHTML += `<div class="bg-teal-50 p-2 rounded max-w-[80%] border border-teal-200 ml-auto text-right my-1"><span class="font-bold text-teal-800">You:</span> 😉 (Wink Sent)</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        function sendMsnMessage() {
+            const input = document.getElementById('msn-input');
+            if (!input || !input.value.trim()) return;
+            const txt = input.value.trim();
+            input.value = '';
+
+            const chatBox = document.getElementById('msn-chat-box');
+            if (chatBox) {
+                chatBox.innerHTML += `<div class="bg-teal-50 p-2 rounded max-w-[80%] border border-teal-200 ml-auto text-right my-1"><span class="font-bold text-teal-800">You:</span> ${txt}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                setTimeout(() => {
+                    const replies = [
+                        "haha oo nga eh! tambay sa cafe til 10pm~",
+                        "brb kuha lang ng C2 solo sa fridge! xDxD",
+                        "wait send ko sayo MP3 via Bluetooth 🎧",
+                        "gege chat ka lang buzz me anytime! =)"
+                    ];
+                    const randReply = replies[Math.floor(Math.random() * replies.length)];
+                    chatBox.innerHTML += `<div class="bg-white p-2 rounded max-w-[80%] border border-teal-300 my-1"><span class="font-bold text-teal-800">Crush_Ng_Bayan_2007:</span> ${randReply}</div>`;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }, 1000);
+            }
+        }
+
+        const fsProfileStorageKey = 'cybercafe-friendster-profile';
+        const fsPostsStorageKey = 'cybercafe-friendster-posts';
+
+        function readFsStorage(key, fallback) {
+            try {
+                const value = localStorage.getItem(key);
+                return value ? JSON.parse(value) : fallback;
+            } catch (error) {
+                return fallback;
+            }
+        }
+
+        function writeFsStorage(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (error) {
+                const status = document.getElementById('fs-save-status');
+                if (status) status.textContent = 'Could not save. Try a smaller picture.';
+            }
+        }
+
+        function restoreFsState() {
+            const profile = readFsStorage(fsProfileStorageKey, null);
+            if (profile) {
+                document.getElementById('fs-edit-name').value = profile.name || '';
+                document.getElementById('fs-edit-status').value = profile.status || '';
+                document.getElementById('fs-edit-location').value = profile.location || '';
+                document.getElementById('fs-edit-hometown').value = profile.hometown || '';
+                document.getElementById('fs-display-name').textContent = profile.name || '';
+                document.getElementById('fs-title-display').textContent = profile.name || '';
+                document.getElementById('fs-display-status').textContent = profile.status || '';
+                document.getElementById('fs-display-location').textContent = profile.location || '';
+                document.getElementById('fs-display-hometown').textContent = profile.hometown || '';
+                if (profile.picture) document.getElementById('fs-avatar').src = profile.picture;
+                if (profile.theme) {
+                    document.getElementById('fs-theme-select').value = profile.theme;
+                    changeFsTheme(profile.theme);
+                }
+            }
+            renderFsPosts(readFsStorage(fsPostsStorageKey, []));
+        }
+
+        function saveFsProfileToStorage() {
+            writeFsStorage(fsProfileStorageKey, {
+                name: document.getElementById('fs-display-name').textContent,
+                status: document.getElementById('fs-display-status').textContent,
+                location: document.getElementById('fs-display-location').textContent,
+                hometown: document.getElementById('fs-display-hometown').textContent,
+                picture: document.getElementById('fs-avatar').src,
+                theme: document.getElementById('fs-theme-select').value
+            });
+        }
+
+        function toggleFsEditor() {
+            const panel = document.getElementById('fs-editor-panel');
+            if (panel) panel.classList.toggle('hidden');
+        }
+
+        function saveFsProfileDetails() {
+            const name = document.getElementById('fs-edit-name').value.trim() || 'Friendster User';
+            const status = document.getElementById('fs-edit-status').value.trim();
+            const loc = document.getElementById('fs-edit-location').value.trim();
+            const home = document.getElementById('fs-edit-hometown').value.trim();
+
+            document.getElementById('fs-display-name').textContent = name;
+            document.getElementById('fs-title-display').textContent = name;
+            document.getElementById('fs-display-status').textContent = status;
+            document.getElementById('fs-display-location').textContent = loc;
+            document.getElementById('fs-display-hometown').textContent = home;
+
+            saveFsProfileToStorage();
+            playWinSound('click');
+            toggleFsEditor();
+        }
+
+        function updateFsProfilePicUrl() {
+            const url = document.getElementById('fs-pic-url-input').value.trim();
+            if (url) {
+                document.getElementById('fs-avatar').src = url;
+                saveFsProfileToStorage();
+            }
+        }
+
+        function uploadFsProfilePic(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const image = new Image();
+                image.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const scale = Math.min(1, 480 / Math.max(image.width, image.height));
+                    canvas.width = Math.round(image.width * scale);
+                    canvas.height = Math.round(image.height * scale);
+                    canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+                    document.getElementById('fs-avatar').src = canvas.toDataURL('image/jpeg', 0.82);
+                    saveFsProfileToStorage();
+                };
+                image.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function changeFsTheme(preset) {
+            const wrapper = document.getElementById('fs-theme-wrapper');
+            if (!wrapper) return;
+
+            wrapper.classList.toggle('fs-classic', preset === 'classic-blue');
+            if (preset === 'cyber-blue') {
+                wrapper.className = 'bg-[#020b1f] text-[#00f0ff] flex-1 overflow-y-auto p-3 font-sans text-xs border-4 border-[#00f0ff] space-y-3';
+            } else if (preset === 'classic-gold') {
+                wrapper.className = 'bg-[#1f1902] text-[#ffd700] flex-1 overflow-y-auto p-3 font-sans text-xs border-4 border-[#ffd700] space-y-3';
+            } else if (preset === 'gothic-purple') {
+                wrapper.className = 'bg-[#15021f] text-[#d8b4fe] flex-1 overflow-y-auto p-3 font-sans text-xs border-4 border-[#a855f7] space-y-3';
+            } else if (preset === 'classic-blue') {
+                wrapper.className = 'fs-classic bg-[#e8eef5] text-[#26384a] flex-1 overflow-y-auto p-3 font-sans text-xs border-2 border-[#315d89] space-y-3';
+            } else {
+                wrapper.className = 'bg-[#0f0207] text-[#ff69b4] flex-1 overflow-y-auto p-3 font-sans text-xs border-4 border-[#ff1493] space-y-3';
+            }
+            wrapper.classList.toggle('fs-classic', preset === 'classic-blue');
+            saveFsProfileToStorage();
+        }
+
+        function renderFsPosts(posts) {
+            const list = document.getElementById('fs-post-list');
+            if (!list) return;
+            list.replaceChildren();
+            (Array.isArray(posts) ? posts : []).forEach(post => {
+                const card = document.createElement('article');
+                card.className = 'fs-post p-2';
+                const byline = document.createElement('div');
+                byline.className = 'font-bold text-[10px] text-[#315d89] mb-1';
+                byline.textContent = `${post.name} · ${post.date}`;
+                const body = document.createElement('p');
+                body.className = 'whitespace-pre-wrap break-words';
+                body.textContent = post.text;
+                card.append(byline, body);
+                list.append(card);
+            });
+        }
+
+        function addFsPost() {
+            const input = document.getElementById('fs-post-input');
+            const text = input.value.trim();
+            if (!text) return;
+            const posts = readFsStorage(fsPostsStorageKey, []);
+            posts.unshift({
+                name: document.getElementById('fs-display-name').textContent,
+                text,
+                date: new Date().toLocaleString()
+            });
+            const recentPosts = posts.slice(0, 30);
+            writeFsStorage(fsPostsStorageKey, recentPosts);
+            renderFsPosts(recentPosts);
+            input.value = '';
+            playWinSound('click');
+        }
+
+        function addFsTestimonial() {
+            const input = document.getElementById('fs-testi-input');
+            if (!input || !input.value.trim()) return;
+            const txt = input.value.trim();
+            input.value = '';
+
+            const list = document.getElementById('fs-testi-list');
+            if (!list) return;
+            const item = document.createElement('div');
+            item.className = 'bg-[#260318] p-2 border border-pink-900/80 rounded space-y-1';
+            const byline = document.createElement('div');
+            byline.className = 'flex justify-between items-center text-[10px] text-pink-400 font-bold';
+            const author = document.createElement('span');
+            author.textContent = document.getElementById('fs-display-name').textContent;
+            const date = document.createElement('span');
+            date.textContent = 'Just now';
+            byline.append(author, date);
+            const paragraph = document.createElement('p');
+            paragraph.className = 'text-pink-100 text-[11px]';
+            paragraph.textContent = txt;
+            item.append(byline, paragraph);
+            list.prepend(item);
+            playWinSound('click');
+        }
+
+        function translateJejemon() {
+            const input = document.getElementById('jeje-input').value;
+            const out = document.getElementById('jeje-output');
+            if (!input) {
+                out.textContent = "eOw pOwz! mUsTa nA kAyO? kAiN nA tAyO... ~!";
+                return;
+            }
+
+            let text = input
+                .replace(/hello/gi, "eOw")
+                .replace(/po/gi, "pOwz")
+                .replace(/kamusta/gi, "mUsTa")
+                .replace(/kambal/gi, "kAmBaL")
+                .replace(/ako/gi, "aKoeh")
+                .replace(/si/gi, "c")
+                .replace(/ko/gi, "qoh")
+                .replace(/kayo/gi, "kAyO");
+
+            let jejeResult = "";
+            for (let i = 0; i < text.length; i++) {
+                jejeResult += (i % 2 === 0) ? text[i].toLowerCase() : text[i].toUpperCase();
+            }
+            out.textContent = jejeResult + " ~! xDxD";
+        }
+
+        function copyJejeText() {
+            const out = document.getElementById('jeje-output').textContent;
+            navigator.clipboard.writeText(out);
+            playWinSound('click');
+        }
+
+        function sendSimSimiMessage() {
+            const input = document.getElementById('sim-input');
+            if (!input || !input.value.trim()) return;
+            const txt = input.value.trim();
+            input.value = '';
+
+            const box = document.getElementById('simsimi-chat-box');
+            if (!box) return;
+
+            box.innerHTML += `<div class="bg-blue-50 text-stone-800 p-2 rounded max-w-[85%] border border-blue-200 ml-auto text-right"><strong>You:</strong> ${txt}</div>`;
+            box.scrollTop = box.scrollHeight;
+
+            setTimeout(() => {
+                const simReplies = [
+                    "Sabi mo yan ha! Libre mo ako ng Pancit Canton at Mountain Dew sa counter! 🐥",
+                    "eOw pOwz~ Jejemon ka rin ba katulad ko? 🐥",
+                    "Basta 2000s, solid ang OPM at Ragnarok Online! 🐥",
+                    "SimSimi smart chick! Wag mo ako i-close window ah! 🐥",
+                    "₱15 per hour rate dito sa cybercafe... extended session na! 🐥"
+                ];
+                const randSim = simReplies[Math.floor(Math.random() * simReplies.length)];
+                box.innerHTML += `<div class="bg-yellow-100 text-amber-900 p-2 rounded max-w-[85%] border border-yellow-300"><strong>SimSimi:</strong> ${randSim}</div>`;
+                box.scrollTop = box.scrollHeight;
+                playWinSound('click');
+            }, 800);
+        }
+
+        const opmTracks = [{
+            title: 'Paasa T.A.N.G.A. - Yeng Constantino',
+            artist: 'From your Music folder',
+            src: 'Music/Paasa%20T.A.N.G.A.%20-%20Yeng%20Constantino%20(Music%20Video).mp3'
+        }];
+        let opmObjectUrls = [];
+
+        function renderOpmTracks() {
+            const select = document.getElementById('opm-select');
+            select.replaceChildren();
+            opmTracks.forEach((track, index) => {
+                const option = document.createElement('option');
+                option.value = String(index);
+                option.textContent = track.title;
+                select.append(option);
+            });
+        }
+
+        function changeOpmTrack(val) {
+            const idx = Number.parseInt(val, 10);
+            const track = opmTracks[idx] || opmTracks[0];
+            const audio = document.getElementById('opm-audio');
+            if (!track || !audio) return;
+            stopOpmTrack();
+            document.getElementById('opm-track-title').textContent = track.title;
+            document.getElementById('opm-track-artist').textContent = track.artist;
+            audio.src = track.src;
+            audio.load();
+            document.getElementById('opm-select').value = String(idx);
+        }
+
+        function loadOpmFolder(event) {
+            const files = Array.from(event.target.files || [])
+                .filter(file => file.type.startsWith('audio/') || /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(file.name))
+                .sort((a, b) => a.name.localeCompare(b.name));
+            if (!files.length) {
+                document.getElementById('opm-library-status').textContent = 'No audio files found in that folder.';
+                return;
+            }
+            opmObjectUrls.forEach(URL.revokeObjectURL);
+            opmObjectUrls = [];
+            opmTracks.splice(0, opmTracks.length, ...files.map(file => {
+                const src = URL.createObjectURL(file);
+                opmObjectUrls.push(src);
+                return {
+                    title: file.name.replace(/\.[^.]+$/, ''),
+                    artist: `Local file · ${file.webkitRelativePath || file.name}`,
+                    src
+                };
+            }));
+            document.getElementById('opm-library-status').textContent = `${files.length} track${files.length === 1 ? '' : 's'} loaded from the selected folder.`;
+            renderOpmTracks();
+            changeOpmTrack('0');
+        }
+
+        function toggleOpmPlay() {
+            const audio = document.getElementById('opm-audio');
+            const playBtn = document.getElementById('btn-opm-play');
+            const statusInd = document.getElementById('opm-status-indicator');
+            if (audio.paused) {
+                audio.play().then(() => {
+                    playBtn.textContent = '⏸ PAUSE';
+                    statusInd.textContent = 'PLAYING';
+                }).catch(() => {
+                    statusInd.textContent = 'TRACK UNAVAILABLE';
+                    document.getElementById('opm-library-status').textContent = 'Could not play track. Choose your Music folder.';
+                });
+            } else {
+                audio.pause();
+                playBtn.textContent = '▶ PLAY';
+                statusInd.textContent = 'PAUSED';
+            }
+        }
+
+        function stopOpmTrack() {
+            const audio = document.getElementById('opm-audio');
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+            const pBar = document.getElementById('opm-progress');
+            if (pBar) pBar.style.width = '0%';
+            const playBtn = document.getElementById('btn-opm-play');
+            if (playBtn) playBtn.textContent = '▶ PLAY';
+            const statusInd = document.getElementById('opm-status-indicator');
+            if (statusInd) statusInd.textContent = 'READY';
+        }
+
+        function initializeOpmPlayer() {
+            const audio = document.getElementById('opm-audio');
+            audio.addEventListener('timeupdate', () => {
+                const progress = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+                document.getElementById('opm-progress').style.width = `${progress}%`;
+            });
+            audio.addEventListener('ended', stopOpmTrack);
+            audio.addEventListener('error', () => {
+                document.getElementById('opm-status-indicator').textContent = 'TRACK NOT FOUND';
+            });
+            renderOpmTracks();
+            changeOpmTrack('0');
+        }
+
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const clockEl = document.getElementById('xp-clock');
+            if (clockEl) {
+                clockEl.textContent = `${hours}:${minutes} ${ampm}`;
+            }
+        }
+
+        window.onload = function() {
+            setInterval(updateClock, 1000);
+            updateClock();
+            updateTaskbar();
+            restoreFsState();
+            initializeOpmPlayer();
+        };
+    </script>
+</body>
+</html>
