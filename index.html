@@ -849,7 +849,7 @@
             </div>
 
             <!-- WINDOW: OPM PLAYER -->
-            <div id="win-opm" class="xp-window hidden pointer-events-auto" style="width: 440px; height: 350px; top: 65px; left: 150px;">
+            <div id="win-opm" class="xp-window hidden pointer-events-auto" style="width: 480px; height: 430px; top: 45px; left: 130px;">
                 <div class="xp-title-bar" onmousedown="dragMouseDown(event, 'win-opm')" ontouchstart="dragTouchStart(event, 'win-opm')">
                     <span class="flex items-center gap-1.5"><i class="fa-solid fa-music"></i> 2000s OPM Hits Music Player</span>
                     <div class="flex">
@@ -857,7 +857,7 @@
                         <button class="xp-btn xp-btn-close" onclick="closeWindow('win-opm')">✕</button>
                     </div>
                 </div>
-                <div class="bg-stone-900 text-emerald-400 p-3 flex-1 flex flex-col justify-between font-mono text-xs">
+                <div class="bg-stone-900 text-emerald-400 p-3 flex-1 flex flex-col justify-between overflow-y-auto font-mono text-xs">
                     <div class="bg-black border-2 border-emerald-500/60 p-3 rounded space-y-2 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
                         <div class="flex justify-between items-center text-[10px] text-emerald-600 border-b border-emerald-900 pb-1">
                             <span>OPM MUSIC PLAYER</span>
@@ -887,6 +887,12 @@
                         </label>
                     </div>
                     <audio id="opm-audio" preload="metadata"></audio>
+
+                    <div class="flex items-center gap-3 text-[11px]">
+                        <label for="opm-volume" class="text-emerald-300 font-bold">Volume</label>
+                        <input id="opm-volume" type="range" min="0" max="100" value="80" step="1" aria-label="OPM player volume" class="flex-1 accent-emerald-500 cursor-pointer" oninput="setOpmVolume(this.value)">
+                        <span id="opm-volume-label" class="w-9 text-right text-emerald-300">80%</span>
+                    </div>
 
                     <div class="flex justify-center items-center gap-3 pt-2">
                         <button onclick="toggleOpmPlay()" id="btn-opm-play" class="px-5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-stone-950 font-black rounded border border-emerald-300 text-sm shadow">
@@ -1626,6 +1632,14 @@
             document.getElementById('opm-select').value = String(idx);
         }
 
+        function setOpmVolume(value) {
+            const volume = Number(value) / 100;
+            const audio = document.getElementById('opm-audio');
+            const label = document.getElementById('opm-volume-label');
+            if (audio) audio.volume = volume;
+            if (label) label.textContent = `${Math.round(volume * 100)}%`;
+        }
+
         function loadOpmFolder(event) {
             const files = Array.from(event.target.files || [])
                 .filter(file => file.type.startsWith('audio/') || /\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(file.name))
@@ -1685,6 +1699,7 @@
 
         function initializeOpmPlayer() {
             const audio = document.getElementById('opm-audio');
+            setOpmVolume(document.getElementById('opm-volume').value);
             audio.addEventListener('timeupdate', () => {
                 const progress = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
                 document.getElementById('opm-progress').style.width = `${progress}%`;
