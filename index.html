@@ -540,7 +540,7 @@
                                 <span class="text-2xl font-black tracking-tight text-[#315d89] font-serif lowercase">friendster<span class="text-xs align-top">®</span></span>
                             </div>
                             <div class="flex gap-2">
-                                <button onclick="toggleFsEditor()" class="btn-xp text-[11px] font-bold bg-white text-stone-900 border-pink-300 hover:bg-pink-100">Edit Profile</button>
+                                <button onclick="toggleFsEditor()" class="btn-xp text-[11px] font-bold bg-white text-stone-900 border-pink-300 hover:bg-pink-100">Edit Profile & Design</button>
                             </div>
                         </div>
 
@@ -553,6 +553,53 @@
                             <span class="hover:bg-[#24496e] px-2 py-0.5 rounded cursor-pointer">Messages</span>
                         </div>
                     </div>
+
+                    <div class="fs-panel flex flex-wrap items-center justify-between gap-2 p-2 text-[11px]">
+                        <span id="fs-account-status" aria-live="polite">Viewing the sample profile · Not signed in</span>
+                        <div class="flex gap-2">
+                            <button id="fs-account-button" onclick="toggleFsAccountPanel()" class="btn-xp font-bold">Create account / Sign in</button>
+                            <button id="fs-signout-button" onclick="signOutFsAccount()" class="btn-xp hidden">Sign out</button>
+                        </div>
+                    </div>
+
+                    <section id="fs-account-panel" class="fs-panel hidden p-3 space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <h4 class="font-bold text-[#315d89]">Your Friendster account</h4>
+                            <button onclick="toggleFsAccountPanel()" class="btn-xp">Close</button>
+                        </div>
+                        <p class="text-[10px] text-slate-600">Demo account saved on this browser for this site only. It won't sync to other devices or provide real online authentication.</p>
+                        <div class="flex gap-2">
+                            <button id="fs-signup-tab" onclick="showFsAccountForm('signup')" class="btn-xp font-bold">Create account</button>
+                            <button id="fs-login-tab" onclick="showFsAccountForm('login')" class="btn-xp">Sign in</button>
+                        </div>
+                        <form id="fs-signup-form" class="space-y-2" onsubmit="createFsAccount(event)">
+                            <div>
+                                <label for="fs-signup-name" class="block font-semibold mb-1">Display name</label>
+                                <input id="fs-signup-name" type="text" maxlength="40" required autocomplete="nickname" class="w-full border border-slate-400 px-2 py-1 text-xs">
+                            </div>
+                            <div>
+                                <label for="fs-signup-username" class="block font-semibold mb-1">Username (3–24 letters, numbers, dots, dashes or underscores)</label>
+                                <input id="fs-signup-username" type="text" maxlength="24" required autocomplete="username" pattern="[\w.\-]{3,24}" class="w-full border border-slate-400 px-2 py-1 text-xs">
+                            </div>
+                            <div>
+                                <label for="fs-signup-password" class="block font-semibold mb-1">Password (at least 8 characters)</label>
+                                <input id="fs-signup-password" type="password" minlength="8" required autocomplete="new-password" class="w-full border border-slate-400 px-2 py-1 text-xs">
+                            </div>
+                            <button type="submit" class="btn-xp font-bold bg-[#315d89] text-white">Create my account</button>
+                        </form>
+                        <form id="fs-login-form" class="hidden space-y-2" onsubmit="loginFsAccount(event)">
+                            <div>
+                                <label for="fs-login-username" class="block font-semibold mb-1">Username</label>
+                                <input id="fs-login-username" type="text" required autocomplete="username" class="w-full border border-slate-400 px-2 py-1 text-xs">
+                            </div>
+                            <div>
+                                <label for="fs-login-password" class="block font-semibold mb-1">Password</label>
+                                <input id="fs-login-password" type="password" required autocomplete="current-password" class="w-full border border-slate-400 px-2 py-1 text-xs">
+                            </div>
+                            <button type="submit" class="btn-xp font-bold bg-[#315d89] text-white">Sign in</button>
+                        </form>
+                        <p id="fs-account-message" class="text-[11px] text-red-700" role="status" aria-live="polite"></p>
+                    </section>
 
                     <!-- Custom Editor Toolbar (Expandable) -->
                     <div id="fs-editor-panel" class="hidden bg-[#2a0519] border-2 stroke-dashed border-[#ff69b4] p-3 rounded space-y-3 text-white text-xs">
@@ -1330,6 +1377,8 @@
 
         const fsProfileStorageKey = 'cybercafe-friendster-profile';
         const fsPostsStorageKey = 'cybercafe-friendster-posts';
+        const fsAccountsStorageKey = 'cybercafe-friendster-accounts';
+        const fsActiveAccountKey = 'cybercafe-friendster-active-account';
 
         function readFsStorage(key, fallback) {
             try {
@@ -1349,39 +1398,217 @@
             }
         }
 
-        function restoreFsState() {
-            const profile = readFsStorage(fsProfileStorageKey, null);
-            if (profile) {
-                document.getElementById('fs-edit-name').value = profile.name || '';
-                document.getElementById('fs-edit-status').value = profile.status || '';
-                document.getElementById('fs-edit-location').value = profile.location || '';
-                document.getElementById('fs-edit-hometown').value = profile.hometown || '';
-                document.getElementById('fs-display-name').textContent = profile.name || '';
-                document.getElementById('fs-title-display').textContent = profile.name || '';
-                document.getElementById('fs-display-status').textContent = profile.status || '';
-                document.getElementById('fs-display-location').textContent = profile.location || '';
-                document.getElementById('fs-display-hometown').textContent = profile.hometown || '';
-                if (profile.picture) document.getElementById('fs-avatar').src = profile.picture;
-                if (profile.theme) {
-                    document.getElementById('fs-theme-select').value = profile.theme;
-                    changeFsTheme(profile.theme);
-                }
-            }
-            renderFsPosts(readFsStorage(fsPostsStorageKey, []));
+        function getFsAccounts() {
+            const accounts = readFsStorage(fsAccountsStorageKey, {});
+            return accounts && typeof accounts === 'object' && !Array.isArray(accounts) ? accounts : {};
         }
 
-        function saveFsProfileToStorage() {
-            writeFsStorage(fsProfileStorageKey, {
+        function getActiveFsUsername() {
+            const username = localStorage.getItem(fsActiveAccountKey);
+            return username && getFsAccounts()[username] ? username : null;
+        }
+
+        function getActiveFsAccount() {
+            const username = getActiveFsUsername();
+            return username ? getFsAccounts()[username] : null;
+        }
+
+        function getFsProfileFromPage() {
+            return {
                 name: document.getElementById('fs-display-name').textContent,
                 status: document.getElementById('fs-display-status').textContent,
                 location: document.getElementById('fs-display-location').textContent,
                 hometown: document.getElementById('fs-display-hometown').textContent,
                 picture: document.getElementById('fs-avatar').src,
                 theme: document.getElementById('fs-theme-select').value
+            };
+        }
+
+        function applyFsProfile(profile) {
+            const values = {
+                name: profile.name || 'Friendster User',
+                status: profile.status || '',
+                location: profile.location || '',
+                hometown: profile.hometown || ''
+            };
+            document.getElementById('fs-edit-name').value = values.name;
+            document.getElementById('fs-edit-status').value = values.status;
+            document.getElementById('fs-edit-location').value = values.location;
+            document.getElementById('fs-edit-hometown').value = values.hometown;
+            document.getElementById('fs-display-name').textContent = values.name;
+            document.getElementById('fs-title-display').textContent = values.name;
+            document.getElementById('fs-display-status').textContent = values.status;
+            document.getElementById('fs-display-location').textContent = values.location;
+            document.getElementById('fs-display-hometown').textContent = values.hometown;
+            if (profile.picture) document.getElementById('fs-avatar').src = profile.picture;
+            const theme = profile.theme || 'classic-blue';
+            document.getElementById('fs-theme-select').value = theme;
+            changeFsTheme(theme);
+        }
+
+        function updateFsAccountStatus() {
+            const account = getActiveFsAccount();
+            const status = document.getElementById('fs-account-status');
+            const accountButton = document.getElementById('fs-account-button');
+            const signoutButton = document.getElementById('fs-signout-button');
+            if (account) {
+                status.textContent = `Signed in as ${account.displayName} (@${account.username})`;
+                accountButton.textContent = 'Account';
+                signoutButton.classList.remove('hidden');
+            } else {
+                status.textContent = 'Viewing the sample profile · Not signed in';
+                accountButton.textContent = 'Create account / Sign in';
+                signoutButton.classList.add('hidden');
+            }
+        }
+
+        function restoreFsState() {
+            const account = getActiveFsAccount();
+            if (account) {
+                applyFsProfile(account.profile || { name: account.displayName, theme: 'classic-blue' });
+                renderFsPosts(account.posts || []);
+            } else {
+                const profile = readFsStorage(fsProfileStorageKey, null);
+                if (profile) applyFsProfile(profile);
+                renderFsPosts(readFsStorage(fsPostsStorageKey, []));
+            }
+            updateFsAccountStatus();
+        }
+
+        function saveFsProfileToStorage() {
+            const profile = getFsProfileFromPage();
+            const username = getActiveFsUsername();
+            if (username) {
+                const accounts = getFsAccounts();
+                accounts[username].profile = profile;
+                accounts[username].displayName = profile.name;
+                writeFsStorage(fsAccountsStorageKey, accounts);
+                updateFsAccountStatus();
+            } else {
+                writeFsStorage(fsProfileStorageKey, profile);
+            }
+        }
+
+        function toggleFsAccountPanel() {
+            const panel = document.getElementById('fs-account-panel');
+            panel.classList.toggle('hidden');
+            document.getElementById('fs-account-message').textContent = '';
+        }
+
+        function showFsAccountForm(mode) {
+            const signup = mode === 'signup';
+            document.getElementById('fs-signup-form').classList.toggle('hidden', !signup);
+            document.getElementById('fs-login-form').classList.toggle('hidden', signup);
+            document.getElementById('fs-signup-tab').classList.toggle('font-bold', signup);
+            document.getElementById('fs-login-tab').classList.toggle('font-bold', !signup);
+            document.getElementById('fs-account-message').textContent = '';
+        }
+
+        async function hashFsPassword(password, saltHex) {
+            if (!crypto.subtle) throw new Error('Secure password storage is unavailable in this browser context.');
+            const salt = Uint8Array.from(saltHex.match(/.{2}/g), byte => parseInt(byte, 16));
+            const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+            const result = await crypto.subtle.deriveBits(
+                { name: 'PBKDF2', salt, iterations: 120000, hash: 'SHA-256' },
+                key,
+                256
+            );
+            return Array.from(new Uint8Array(result), byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function createFsAccount(event) {
+            event.preventDefault();
+            const message = document.getElementById('fs-account-message');
+            const username = document.getElementById('fs-signup-username').value.trim().toLowerCase();
+            const displayName = document.getElementById('fs-signup-name').value.trim();
+            const password = document.getElementById('fs-signup-password').value;
+            const accounts = getFsAccounts();
+            if (accounts[username]) {
+                message.textContent = 'That username is already taken in this browser.';
+                return;
+            }
+            if (!displayName || password.length < 8) {
+                message.textContent = 'Enter a display name and a password with at least 8 characters.';
+                return;
+            }
+            try {
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const saltHex = Array.from(salt, byte => byte.toString(16).padStart(2, '0')).join('');
+                const passwordHash = await hashFsPassword(password, saltHex);
+                accounts[username] = {
+                    username,
+                    displayName,
+                    salt: saltHex,
+                    passwordHash,
+                    profile: {
+                        name: displayName,
+                        status: '',
+                        location: '',
+                        hometown: '',
+                        picture: document.getElementById('fs-avatar').src,
+                        theme: 'classic-blue'
+                    },
+                    posts: []
+                };
+                writeFsStorage(fsAccountsStorageKey, accounts);
+                localStorage.setItem(fsActiveAccountKey, username);
+                document.getElementById('fs-signup-form').reset();
+                document.getElementById('fs-account-panel').classList.add('hidden');
+                restoreFsState();
+            } catch (error) {
+                message.textContent = error.message || 'Could not create the account in this browser.';
+            }
+        }
+
+        async function loginFsAccount(event) {
+            event.preventDefault();
+            const message = document.getElementById('fs-account-message');
+            const username = document.getElementById('fs-login-username').value.trim().toLowerCase();
+            const password = document.getElementById('fs-login-password').value;
+            const account = getFsAccounts()[username];
+            if (!account) {
+                message.textContent = 'Account not found in this browser.';
+                return;
+            }
+            try {
+                const passwordHash = await hashFsPassword(password, account.salt);
+                if (passwordHash !== account.passwordHash) {
+                    message.textContent = 'Incorrect username or password.';
+                    return;
+                }
+                localStorage.setItem(fsActiveAccountKey, username);
+                document.getElementById('fs-login-form').reset();
+                document.getElementById('fs-account-panel').classList.add('hidden');
+                restoreFsState();
+            } catch (error) {
+                message.textContent = error.message || 'Could not sign in.';
+            }
+        }
+
+        function signOutFsAccount() {
+            saveFsProfileToStorage();
+            localStorage.removeItem(fsActiveAccountKey);
+            document.getElementById('fs-editor-panel').classList.add('hidden');
+            document.getElementById('fs-account-panel').classList.add('hidden');
+            applyFsProfile({
+                name: 'xX_Echo_Jericho_Xx',
+                status: `"Pangako Sa 'Yo... 2000s Pop Heartthrob Vibe!"`,
+                location: 'Quezon City, PH',
+                hometown: 'Marikina City',
+                picture: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
+                theme: 'classic-blue'
             });
+            renderFsPosts(readFsStorage(fsPostsStorageKey, []));
+            updateFsAccountStatus();
         }
 
         function toggleFsEditor() {
+            if (!getActiveFsAccount()) {
+                document.getElementById('fs-account-panel').classList.remove('hidden');
+                document.getElementById('fs-account-message').textContent = 'Create an account or sign in to edit your profile.';
+                showFsAccountForm('signup');
+                return;
+            }
             const panel = document.getElementById('fs-editor-panel');
             if (panel) panel.classList.toggle('hidden');
         }
@@ -1405,15 +1632,31 @@
 
         function updateFsProfilePicUrl() {
             const url = document.getElementById('fs-pic-url-input').value.trim();
-            if (url) {
+            if (!getActiveFsAccount()) {
+                toggleFsEditor();
+                return;
+            }
+            if (/^https?:\/\/\S+$/i.test(url)) {
                 document.getElementById('fs-avatar').src = url;
                 saveFsProfileToStorage();
+                document.getElementById('fs-save-status').textContent = 'Profile picture updated.';
+            } else if (url) {
+                document.getElementById('fs-save-status').textContent = 'Enter a valid http or https image URL.';
             }
         }
 
         function uploadFsProfilePic(e) {
             const file = e.target.files[0];
             if (!file) return;
+            if (!getActiveFsAccount()) {
+                toggleFsEditor();
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                document.getElementById('fs-save-status').textContent = 'Choose an image smaller than 10 MB.';
+                e.target.value = '';
+                return;
+            }
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const image = new Image();
@@ -1425,6 +1668,7 @@
                     canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
                     document.getElementById('fs-avatar').src = canvas.toDataURL('image/jpeg', 0.82);
                     saveFsProfileToStorage();
+                    document.getElementById('fs-save-status').textContent = 'Profile picture uploaded.';
                 };
                 image.src = evt.target.result;
             };
@@ -1432,6 +1676,13 @@
         }
 
         function changeFsTheme(preset) {
+            if (!getActiveFsAccount() && document.getElementById('fs-editor-panel') && !document.getElementById('fs-editor-panel').classList.contains('hidden')) {
+                document.getElementById('fs-theme-select').value = 'classic-blue';
+                document.getElementById('fs-account-panel').classList.remove('hidden');
+                document.getElementById('fs-account-message').textContent = 'Create an account or sign in to customize your design.';
+                showFsAccountForm('signup');
+                preset = 'classic-blue';
+            }
             const wrapper = document.getElementById('fs-theme-wrapper');
             if (!wrapper) return;
 
@@ -1470,17 +1721,26 @@
         }
 
         function addFsPost() {
+            if (!getActiveFsAccount()) {
+                document.getElementById('fs-account-panel').classList.remove('hidden');
+                document.getElementById('fs-account-message').textContent = 'Create an account or sign in to post to your profile.';
+                showFsAccountForm('signup');
+                return;
+            }
             const input = document.getElementById('fs-post-input');
             const text = input.value.trim();
             if (!text) return;
-            const posts = readFsStorage(fsPostsStorageKey, []);
+            const account = getActiveFsAccount();
+            const posts = Array.isArray(account.posts) ? account.posts : [];
             posts.unshift({
-                name: document.getElementById('fs-display-name').textContent,
+                name: account.displayName,
                 text,
                 date: new Date().toLocaleString()
             });
             const recentPosts = posts.slice(0, 30);
-            writeFsStorage(fsPostsStorageKey, recentPosts);
+            const accounts = getFsAccounts();
+            accounts[account.username].posts = recentPosts;
+            writeFsStorage(fsAccountsStorageKey, accounts);
             renderFsPosts(recentPosts);
             input.value = '';
             playWinSound('click');
